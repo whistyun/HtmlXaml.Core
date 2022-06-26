@@ -10,33 +10,23 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.Parsers
 {
-    internal class HeadingParser : ITagParser
+    internal class HeadingParser : ISimpleTagParser
     {
+        public IEnumerable<string> SupportTag => new[] { "h1", "h2", "h3", "h4", "h5", "h6" };
+
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<IMdElement> generated)
         {
-            generated = Array.Empty<IMdElement>();
-
-            if (node.NodeType != HtmlNodeType.Element)
-                return false;
-
-            if (!Regex.IsMatch(node.Name, "^[hH][1-6]$"))
-                return false;
-
             var level = Int32.Parse(node.Name.Substring(1));
 
             var blocks = manager.ParseAndGroup(node.ChildNodes);
 
-            if (blocks.Count() > 1)
-                return false;
-
-            var block = blocks.First();
-
-            if (block is Paragraph paragraph)
+            if (blocks.Count() == 1 && blocks.First() is Paragraph paragraph)
             {
                 generated = new[] { new HeadingBlock(level, paragraph) };
                 return true;
             }
 
+            generated = Array.Empty<IMdElement>();
             return false;
         }
     }

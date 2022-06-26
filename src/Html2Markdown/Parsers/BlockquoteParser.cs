@@ -9,18 +9,12 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.Parsers
 {
-    internal class BlockquoteParser : ITagParser
+    internal class BlockquoteParser : ISimpleTagParser
     {
+        public IEnumerable<string> SupportTag => new[] { "blockquote" };
+
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<IMdElement> generated)
         {
-            generated = Array.Empty<IMdElement>();
-
-            if (node.NodeType != HtmlNodeType.Element)
-                return false;
-
-            if (node.Name.ToLower() != "blockquote")
-                return false;
-
             var blocks = manager.ParseAndGroup(node.ChildNodes);
 
             generated = new[] { new BlockquoteBlock(blocks) };

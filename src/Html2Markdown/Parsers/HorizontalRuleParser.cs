@@ -9,18 +9,12 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.Parsers
 {
-    internal class HorizontalRuleParser : ITagParser
+    internal class HorizontalRuleParser : ISimpleTagParser
     {
+        public IEnumerable<string> SupportTag => new[] { "hr" };
+
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<IMdElement> generated)
         {
-            generated = Array.Empty<IMdElement>();
-
-            if (node.NodeType != HtmlNodeType.Element)
-                return false;
-
-            if (node.Name.ToLower() != "hr")
-                return false;
-
             generated = new[] { new HorizontalRuleBlock() };
             return true;
         }

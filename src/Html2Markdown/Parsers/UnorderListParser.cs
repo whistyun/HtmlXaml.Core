@@ -10,22 +10,12 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.Parsers
 {
-    internal class UnorderListParser : ITagParser
+    internal class UnorderListParser : ISimpleTagParser
     {
+        public IEnumerable<string> SupportTag => new[] { "ul" };
+
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<IMdElement> generated)
         {
-            if (node.NodeType != HtmlNodeType.Element)
-            {
-                generated = Array.Empty<IMdElement>();
-                return false;
-            }
-
-            if (node.Name.ToLower() != "ul")
-            {
-                generated = Array.Empty<IMdElement>();
-                return false;
-            }
-
             var block = new UnorderListBlock();
 
             foreach (var listItem in node.ChildNodes.CollectTag("li"))

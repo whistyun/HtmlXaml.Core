@@ -1,20 +1,18 @@
 ﻿using Html2Markdown.MdElements;
+using Html2Markdown.MdElements.Inlines;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 
 namespace Html2Markdown.Parsers
 {
-    /// <summary>
-    /// remove comment element
-    /// </summary>
-    class CommentParsre : ISimpleTagParser
+    internal class LineBreakParser : ISimpleTagParser
     {
-        public IEnumerable<string> SupportTag => new[] { HtmlNode.HtmlNodeTypeNameComment };
+        public IEnumerable<string> SupportTag => new[] { "br" };
 
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<IMdElement> generated)
         {
-            generated = Array.Empty<IMdElement>();
+            generated = new[] { new Linebreak() };
             return true;
         }
     }

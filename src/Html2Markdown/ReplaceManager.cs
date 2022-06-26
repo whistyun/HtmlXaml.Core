@@ -12,26 +12,55 @@ namespace Html2Markdown
 {
     internal class ReplaceManager
     {
+        private Dictionary<string, List<ISimpleTagParser>> _bindParsers;
         private List<ITagParser> _parsers;
 
         public ReplaceManager()
         {
+            _bindParsers = new();
             _parsers = new();
 
             Register(new TagIgnoreParser());
             Register(new CommentParsre());
+
+            Register(new BoldParser());
+            Register(new ItalicParser());
+            Register(new HyperlinkParser());
+            Register(new ImageParser());
+            Register(new CodeSpanParser());
+
             Register(new HeadingParser());
             Register(new OrderListParser());
             Register(new UnorderListParser());
-            Register(new BasicInlineParser());
             Register(new ParagraphParser());
             Register(new TextNodeParser());
+            Register(new LineBreakParser());
             Register(new BlockquoteParser());
             Register(new CodeBlockParser());
             Register(new HorizontalRuleParser());
         }
 
-        public void Register(ITagParser parser) => _parsers.Add(parser);
+        public void Register(ISimpleTagParser parser)
+        {
+            foreach (var tag in parser.SupportTag)
+            {
+                if (!_bindParsers.TryGetValue(tag.ToLower(), out var list))
+                {
+                    list = new();
+                    _bindParsers.Add(tag.ToLower(), list);
+                }
+                list.Add(parser);
+            }
+        }
+
+        public void Register(ITagParser parser)
+        {
+            if (parser is ISimpleTagParser simpleParser)
+                Register(simpleParser);
+
+            else
+                _parsers.Add(parser);
+        }
 
         public IEnumerable<IMdBlock> Parse(string htmldoc)
         {
@@ -117,6 +146,17 @@ namespace Html2Markdown
         /// <returns></returns>
         private IEnumerable<IMdElement> ParseIt(HtmlNode node)
         {
+            if (_bindParsers.TryGetValue(node.Name.ToLower(), out var binds))
+            {
+                foreach (var bind in binds)
+                {
+                    if (bind.TryReplace(node, this, out var parsed))
+                    {
+                        return parsed;
+                    }
+                }
+            }
+
             foreach (var parser in _parsers)
             {
                 if (parser.TryReplace(node, this, out var parsed))

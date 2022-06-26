@@ -11,25 +11,11 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.Parsers
 {
-    internal class CodeBlockParser : ITagParser
+    internal class CodeBlockParser : ISimpleTagParser
     {
+        public IEnumerable<string> SupportTag => new[] { "pre" };
+
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<IMdElement> generated)
-        {
-            if (node.NodeType == HtmlNodeType.Element)
-            {
-                var tagName = node.Name.ToLower();
-
-                if (tagName == "pre")
-                {
-                    return TryReplaceWithPre(node, manager, out generated);
-                }
-            }
-
-            generated = Array.Empty<IMdElement>();
-            return false;
-        }
-
-        private bool TryReplaceWithPre(HtmlNode node, ReplaceManager manager, out IEnumerable<IMdElement> generated)
         {
             generated = Array.Empty<IMdElement>();
 

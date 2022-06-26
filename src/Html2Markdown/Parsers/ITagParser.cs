@@ -11,4 +11,9 @@ namespace Html2Markdown.Parsers
     {
         bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<IMdElement> generated);
     }
+
+    internal interface ISimpleTagParser : ITagParser
+    {
+        IEnumerable<string> SupportTag { get; }
+    }
 }

@@ -11,17 +11,13 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.Parsers
 {
-    internal class PipeTableParser : ITagParser
+    internal class PipeTableParser : ISimpleTagParser
     {
+        public IEnumerable<string> SupportTag => new[] { "table" };
+
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<IMdElement> generated)
         {
             generated = Array.Empty<IMdElement>();
-
-            if (node.NodeType != HtmlNodeType.Element)
-                return false;
-
-            if (node.Name.ToLower() != "table")
-                return false;
 
             var theadRows = node.SelectNodes("./thead/tr");
             if (theadRows is null)
@@ -56,9 +52,7 @@ namespace Html2Markdown.Parsers
                 details = details.Concat(footGrp);
             }
 
-            generated = new[] {
-                new PipeTableBlock(headStyle ,headGrp.First(), details)
-            };
+            generated = new[] { new PipeTableBlock(headStyle, headGrp.First(), details) };
             return false;
         }
 
