@@ -1,76 +1,74 @@
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Html2Markdown.Replacement;
-using Html2Markdown.Scheme;
+using System.Text;
 
 namespace Html2Markdown
 {
-	/// <summary>
-	/// An Html to Markdown converter.
-	/// </summary>
-	public class Converter
-	{
-		private readonly IList<IReplacer> _replacers;
-		
-		/// <summary>
-		/// Create a Converter with the standard Markdown conversion scheme
-		/// </summary>
-		public Converter() 
-		{
-			_replacers = new Markdown().Replacers();
-		}
+    /// <summary>
+    /// An Html to Markdown converter.
+    /// </summary>
+    public class Converter
+    {
+        private ReplaceManager _manager;
 
-		/// <summary>
-		/// Create a converter with a custom conversion scheme
-		/// </summary>
-		/// <param name="scheme">Conversion scheme to control conversion</param>
-		public Converter(IScheme scheme)
-		{
-			_replacers = scheme.Replacers();
-		}
+        /// <summary>
+        /// Create a Converter with the standard Markdown conversion scheme
+        /// </summary>
+        public Converter()
+        {
+            _manager = new ReplaceManager();
 
-		/// <summary>
-		/// Converts Html contained in a file to a Markdown string
-		/// </summary>
-		/// <param name="path">The path to the file which is being converted</param>
-		/// <returns>A Markdown representation of the passed in Html</returns>
-		public string ConvertFile(string path)
-		{
-			using (var stream = new FileStream(path, FileMode.Open)) {
-				using (var reader = new StreamReader(stream))
-				{
-					var html = reader.ReadToEnd();
-					html = StandardiseWhitespace(html);
-					return Convert(html);
-				}
-			}
-		}
+        }
 
-		private static string StandardiseWhitespace(string html)
-		{
-			return Regex.Replace(html, @"([^\r])\n", "$1\r\n");
-		}
 
-		/// <summary>
-		/// Converts an Html string to a Markdown string
-		/// </summary>
-		/// <param name="html">The Html string you wish to convert</param>
-		/// <returns>A Markdown representation of the passed in Html</returns>
-		public string Convert(string html)
-		{
-			return CleanWhiteSpace(_replacers.Aggregate(html, (current, element) => element.Replace(current)));
-		}
+        /// <summary>
+        /// Converts Html contained in a file to a Markdown string
+        /// </summary>
+        /// <param name="path">The path to the file which is being converted</param>
+        /// <returns>A Markdown representation of the passed in Html</returns>
+        public string ConvertFile(string path)
+        {
+            using (var stream = new FileStream(path, FileMode.Open))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    return Convert(reader.ReadToEnd());
+                }
+            }
+        }
 
-		private static string CleanWhiteSpace(string markdown)
-		{
-			var cleaned = Regex.Replace(markdown, @"\r\n\s+\r\n", "\r\n\r\n");
-			cleaned = Regex.Replace(cleaned, @"(\r\n){3,}", "\r\n\r\n");
-			cleaned = Regex.Replace(cleaned, @"(> \r\n){2,}", "> \r\n");
-			cleaned = Regex.Replace(cleaned, @"^(\r\n)+", "");
-			cleaned = Regex.Replace(cleaned, @"(\r\n)+$", "");
-			return cleaned;
-		}
-	}
+        /// <summary>
+        /// Converts an Html string to a Markdown string
+        /// </summary>
+        /// <param name="html">The Html string you wish to convert</param>
+        /// <returns>A Markdown representation of the passed in Html</returns>
+        public string Convert(string html)
+        {
+            var buff = new StringBuilder();
+
+            var normHtml = html.Replace("\r\n", "\n")
+                               .Replace("\r", "\n");
+
+            bool isRepeated = false;
+
+            foreach (var block in _manager.Parse(normHtml))
+            {
+                if (isRepeated)
+                {
+                    buff.Append('\n');
+                }
+
+                foreach (var line in block.ToMarkdown())
+                {
+                    buff.Append(line).Append('\n');
+                }
+
+                isRepeated = true;
+            }
+
+            while (buff.Length > 0 && buff[buff.Length - 1] == '\n')
+                buff.Remove(buff.Length - 1, 1);
+
+            return buff.ToString();
+        }
+    }
 }

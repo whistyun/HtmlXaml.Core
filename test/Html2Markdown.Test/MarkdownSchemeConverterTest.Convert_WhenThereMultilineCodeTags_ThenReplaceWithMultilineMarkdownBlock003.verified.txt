@@ -1,6 +1,4 @@
-﻿```
-	class solution {
-		int i;
-		string name = “name”;
-	}
-```
+﻿    	class solution {
+    		int i;
+    		string name = “name”;
+    	}

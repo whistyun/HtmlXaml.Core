@@ -1,0 +1,216 @@
+﻿using Html2Markdown.MdElements;
+using Html2Markdown.MdElements.Blocks;
+using Html2Markdown.MdElements.Inlines;
+using Html2Markdown.Parsers;
+using Html2Markdown.Utils;
+using HtmlAgilityPack;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Html2Markdown
+{
+    internal class ReplaceManager
+    {
+        private List<ITagParser> _parsers;
+
+        public ReplaceManager()
+        {
+            _parsers = new();
+
+            Register(new TagIgnoreParser());
+            Register(new CommentParsre());
+            Register(new HeadingParser());
+            Register(new OrderListParser());
+            Register(new UnorderListParser());
+            Register(new BasicInlineParser());
+            Register(new ParagraphParser());
+            Register(new TextNodeParser());
+            Register(new BlockquoteParser());
+            Register(new CodeBlockParser());
+            Register(new HorizontalRuleParser());
+        }
+
+        public void Register(ITagParser parser) => _parsers.Add(parser);
+
+        public IEnumerable<IMdBlock> Parse(string htmldoc)
+        {
+            var doc = new HtmlDocument();
+            doc.LoadHtml(htmldoc);
+
+            return Parse(doc);
+        }
+
+        public IEnumerable<IMdBlock> Parse(HtmlDocument doc)
+        {
+            var contents = new List<HtmlNode>();
+
+            var head = doc.DocumentNode.SelectNodes("//head")?.FirstOrDefault();
+            if (head is not null)
+                contents.AddRange(head.ChildNodes.SkipComment());
+
+            var body = doc.DocumentNode.SelectNodes("//body")?.FirstOrDefault();
+            if (body is not null)
+                contents.AddRange(body.ChildNodes.SkipComment());
+
+            if (contents.Count == 0)
+            {
+                var root = doc.DocumentNode.ChildNodes.SkipComment();
+
+                if (root.Count == 1 && string.Equals(root[0].Name, "html", StringComparison.OrdinalIgnoreCase))
+                    contents.AddRange(root[0].ChildNodes.SkipComment());
+                else
+                    contents.AddRange(root);
+            }
+
+            var jaggingResult = ParseJagging(contents);
+
+            return Blocking(jaggingResult);
+        }
+
+        /// <summary>
+        /// Convert a html tag list to an element of markdown.
+        /// Inline elements are aggreated into paragraph.
+        /// </summary>
+        public IEnumerable<IMdBlock> ParseAndGroup(HtmlNodeCollection nodes)
+        {
+            var jaggingResult = ParseJagging(nodes);
+
+            return Blocking(jaggingResult);
+        }
+
+        /// <summary>
+        /// Convert a html tag to an element of markdown.
+        /// this result contains a block element and an inline element.
+        /// </summary>
+        public IEnumerable<IMdElement> ParseJagging(IEnumerable<HtmlNode> nodes)
+        {
+            bool isPrevBlock = true;
+            IMdElement? lastElement = DummyBLock.Instance;
+
+            foreach (var node in nodes)
+            {
+                if (node.IsComment())
+                    continue;
+
+                // remove blank text between the blocks.
+                if (isPrevBlock
+                    && node is HtmlTextNode txt
+                    && String.IsNullOrWhiteSpace(txt.Text))
+                    continue;
+
+                foreach (var element in ParseIt(node))
+                {
+                    lastElement = element;
+                    yield return element;
+                }
+
+                isPrevBlock = lastElement is IMdBlock;
+            }
+        }
+
+        /// <summary>
+        /// Convert a html tag to an element of markdown.
+        /// Only tag node and text node are accepted.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private IEnumerable<IMdElement> ParseIt(HtmlNode node)
+        {
+            foreach (var parser in _parsers)
+            {
+                if (parser.TryReplace(node, this, out var parsed))
+                {
+                    return parsed;
+                }
+            }
+
+            return Array.Empty<IMdElement>();
+        }
+
+        private IEnumerable<IMdBlock> Blocking(IEnumerable<IMdElement> elements)
+        {
+            bool Grouping(IList<IMdInline> inlines)
+            {
+                // trim whiltepace plain
+
+                while (inlines.Count > 0)
+                {
+                    if (inlines[0] is Plain plain
+                        && String.IsNullOrWhiteSpace(plain.Content))
+                    {
+                        inlines.RemoveAt(0);
+                    }
+                    else break;
+                }
+
+                while (inlines.Count > 0)
+                {
+                    if (inlines[inlines.Count - 1] is Plain plain
+                        && String.IsNullOrWhiteSpace(plain.Content))
+                    {
+                        inlines.RemoveAt(inlines.Count - 1);
+                    }
+                    else break;
+                }
+
+                using (var list = inlines.GetEnumerator())
+                {
+                    IMdInline? prev = null;
+
+                    if (list.MoveNext())
+                    {
+                        prev = list.Current;
+                        prev.TrimStart();
+
+                        while (list.MoveNext())
+                        {
+                            var now = list.Current;
+
+                            if (now is Linebreak)
+                            {
+                                prev!.TrimEnd();
+
+                                if (list.MoveNext())
+                                {
+                                    now = list.Current;
+                                    now.TrimStart();
+                                }
+                            }
+
+                            prev = now;
+                        }
+                    }
+
+                    prev?.TrimEnd();
+                }
+                return inlines.Count > 0;
+            }
+
+            List<IMdInline> stored = new();
+            foreach (var e in elements)
+            {
+                if (e is IMdInline inline)
+                {
+                    stored.Add(inline);
+                    continue;
+                }
+
+                // grouping inlines
+                if (stored.Count != 0)
+                {
+                    if (Grouping(stored))
+                        yield return new Paragraph(stored.ToArray());
+
+                    stored.Clear();
+                }
+
+                yield return (IMdBlock)e;
+            }
+
+            if (stored.Count != 0)
+                if (Grouping(stored))
+                    yield return new Paragraph(stored.ToArray());
+        }
+    }
+}
