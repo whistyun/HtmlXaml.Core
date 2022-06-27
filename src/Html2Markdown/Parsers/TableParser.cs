@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.Parsers
 {
-    internal class PipeTableParser : ISimpleTagParser
+    public class PipeTableParser : ISimpleTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "table" };
 

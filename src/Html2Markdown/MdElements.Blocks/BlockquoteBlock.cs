@@ -4,7 +4,7 @@ using Html2Markdown.Utils;
 
 namespace Html2Markdown.MdElements.Blocks
 {
-    internal class BlockquoteBlock : IMdBlock
+    public class BlockquoteBlock : IMdBlock
     {
         public IEnumerable<IMdBlock> Content { get; }
 

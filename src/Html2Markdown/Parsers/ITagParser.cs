@@ -7,12 +7,12 @@ using System.Text;
 
 namespace Html2Markdown.Parsers
 {
-    internal interface ITagParser
+    public interface ITagParser
     {
         bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<IMdElement> generated);
     }
 
-    internal interface ISimpleTagParser : ITagParser
+    public interface ISimpleTagParser : ITagParser
     {
         IEnumerable<string> SupportTag { get; }
     }

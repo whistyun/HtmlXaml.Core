@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Html2Markdown.Parsers
 {
-    internal class HyperlinkParser : ISimpleTagParser
+    public class HyperlinkParser : ISimpleTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "a" };
 

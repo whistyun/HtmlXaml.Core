@@ -8,7 +8,7 @@ namespace Html2Markdown.MdElements.Inlines
     //
     // [text](link) => <a href="link">text</a>
     //
-    internal class Hyperlink : IMdInline
+    public class Hyperlink : IMdInline
     {
         public string Link { get; }
         public IEnumerable<IMdInline> Content { get; }

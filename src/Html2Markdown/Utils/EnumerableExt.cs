@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Html2Markdown.Utils
 {
-    static class EnumerableExt
+    internal static class EnumerableExt
     {
         public static bool TryCast<T>(this IEnumerable list, out List<T> casts)
         {

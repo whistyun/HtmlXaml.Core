@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.Parsers
 {
-    internal class HorizontalRuleParser : ISimpleTagParser
+    public class HorizontalRuleParser : ISimpleTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "hr" };
 

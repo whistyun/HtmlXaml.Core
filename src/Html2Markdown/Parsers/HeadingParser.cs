@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.Parsers
 {
-    internal class HeadingParser : ISimpleTagParser
+    public class HeadingParser : ISimpleTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "h1", "h2", "h3", "h4", "h5", "h6" };
 

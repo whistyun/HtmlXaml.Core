@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Html2Markdown.Parsers
 {
-    internal class TextNodeParser : ISimpleTagParser
+    public class TextNodeParser : ISimpleTagParser
     {
         public IEnumerable<string> SupportTag => new[] { HtmlNode.HtmlNodeTypeNameText };
 

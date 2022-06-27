@@ -4,7 +4,7 @@ using Html2Markdown.Utils;
 
 namespace Html2Markdown.MdElements.Blocks
 {
-    internal class UnorderListBlock : IMdBlock
+    public class UnorderListBlock : IMdBlock
     {
         private const string Symbol = "* ";
         private const string Indent = "  ";

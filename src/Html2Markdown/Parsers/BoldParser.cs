@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Html2Markdown.Parsers
 {
-    internal class BoldParser : SimpleInlineParser
+    public class BoldParser : SimpleInlineParser
     {
         public BoldParser() : base("b", "strong") { }
 

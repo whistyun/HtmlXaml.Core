@@ -7,7 +7,7 @@ namespace Html2Markdown.MdElements.Inlines
     //
     // ""text""  => <cite>text</cite>
     //
-    internal class Cite : AccessoryInline
+    public class Cite : AccessoryInline
     {
         public Cite(IEnumerable<IMdInline> content) : base("\"\"", content)
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.MdElements.Blocks
 {
-    class DummyBLock : IMdBlock
+    internal class DummyBLock : IMdBlock
     {
         public static readonly DummyBLock Instance = new();
 

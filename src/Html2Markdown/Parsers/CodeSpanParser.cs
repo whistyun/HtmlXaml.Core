@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace Html2Markdown.Parsers
 {
-    internal class CodeSpanParser : ISimpleTagParser
+    public class CodeSpanParser : ISimpleTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "code" };
 

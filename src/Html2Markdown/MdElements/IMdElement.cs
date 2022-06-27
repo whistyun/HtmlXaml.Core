@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Html2Markdown.MdElements
 {
-    internal interface IMdElement
+    public interface IMdElement
     {
     }
 }

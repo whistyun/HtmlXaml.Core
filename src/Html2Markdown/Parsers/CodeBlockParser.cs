@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.Parsers
 {
-    internal class CodeBlockParser : ISimpleTagParser
+    public class CodeBlockParser : ISimpleTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "pre" };
 

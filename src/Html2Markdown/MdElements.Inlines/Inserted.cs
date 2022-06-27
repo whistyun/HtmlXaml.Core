@@ -7,7 +7,7 @@ namespace Html2Markdown.MdElements.Inlines
     //
     // ++text++ => <ins>text</ins>
     //
-    internal class Inserted : AccessoryInline
+    public class Inserted : AccessoryInline
     {
         public Inserted(IEnumerable<IMdInline> content) : base("++", content)
         {

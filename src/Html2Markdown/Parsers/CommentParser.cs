@@ -8,7 +8,7 @@ namespace Html2Markdown.Parsers
     /// <summary>
     /// remove comment element
     /// </summary>
-    class CommentParsre : ISimpleTagParser
+    public class CommentParsre : ISimpleTagParser
     {
         public IEnumerable<string> SupportTag => new[] { HtmlNode.HtmlNodeTypeNameComment };
 

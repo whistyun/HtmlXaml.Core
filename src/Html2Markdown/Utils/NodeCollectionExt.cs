@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Html2Markdown.Utils
 {
-    static class NodeCollectionExt
+    internal static class NodeCollectionExt
     {
         public static List<HtmlNode> SkipComment(this HtmlNodeCollection list)
         {

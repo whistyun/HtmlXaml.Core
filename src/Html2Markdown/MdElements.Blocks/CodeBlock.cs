@@ -5,7 +5,7 @@ using Html2Markdown.Utils;
 
 namespace Html2Markdown.MdElements.Blocks
 {
-    internal class CodeBlock : IMdBlock
+    public class CodeBlock : IMdBlock
     {
         public string Lang { get; }
         public string Code { get; }

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Html2Markdown.Parsers
 {
-    internal class LineBreakParser : ISimpleTagParser
+    public class LineBreakParser : ISimpleTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "br" };
 

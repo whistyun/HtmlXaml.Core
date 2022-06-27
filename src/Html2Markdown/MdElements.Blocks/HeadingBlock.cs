@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.MdElements.Blocks
 {
-    internal class HeadingBlock : IMdBlock
+    public class HeadingBlock : IMdBlock
     {
         public int Level { get; }
         public IMdBlock Content { get; }

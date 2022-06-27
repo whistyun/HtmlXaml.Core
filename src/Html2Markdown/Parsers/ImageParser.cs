@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Html2Markdown.Parsers
 {
-    internal class ImageParser : ISimpleTagParser
+    public class ImageParser : ISimpleTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "img", "image" };
 

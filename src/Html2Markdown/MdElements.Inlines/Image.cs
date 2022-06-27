@@ -7,7 +7,7 @@ namespace Html2Markdown.MdElements.Inlines
     //
     // ![text](link) => <img alt="text" src="link">
     //
-    internal class Image : IMdInline
+    public class Image : IMdInline
     {
         public string? Alt { get; }
         public string Src { get; }

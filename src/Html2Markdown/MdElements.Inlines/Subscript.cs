@@ -7,7 +7,7 @@ namespace Html2Markdown.MdElements.Inlines
     //
     // H~2~O => H<sub>2</sub>O
     //
-    internal class Subscript : AccessoryInline
+    public class Subscript : AccessoryInline
     {
         public Subscript(IEnumerable<IMdInline> content) : base("~", content)
         {

@@ -9,7 +9,7 @@ namespace Html2Markdown.MdElements.Inlines
     // **text**  => <b>text</b>
     //              <strong>text</strong>
     //
-    internal class Bold : AccessoryInline
+    public class Bold : AccessoryInline
     {
         public Bold(IEnumerable<IMdInline> content) : base("**", content)
         {

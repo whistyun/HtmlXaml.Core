@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.Parsers
 {
-    internal class TagIgnoreParser : ISimpleTagParser
+    public class TagIgnoreParser : ISimpleTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "title", "meta", "link", "script", "style" };
 

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.Parsers
 {
-    internal class OrderListParser : ISimpleTagParser
+    public class OrderListParser : ISimpleTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "ol" };
 

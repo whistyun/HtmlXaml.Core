@@ -7,7 +7,7 @@ namespace Html2Markdown.MdElements.Inlines
     //
     // ==text== => <mark>text</mark>
     //
-    internal class Marked : AccessoryInline
+    public class Marked : AccessoryInline
     {
         public Marked(IEnumerable<IMdInline> content) : base("==", content)
         {

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Html2Markdown.MdElements.Blocks
 {
-    internal class Paragraph : IMdBlock
+    public class Paragraph : IMdBlock
     {
         public IEnumerable<IMdInline> Inlines { get; }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.MdElements.Inlines
 {
-    internal abstract class AccessoryInline : IMdInline
+    public abstract class AccessoryInline : IMdInline
     {
         public string Tag { get; }
         public IEnumerable<IMdInline> Content { get; }

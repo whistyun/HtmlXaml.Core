@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Html2Markdown.Parsers
 {
-    internal class ItalicParser : SimpleInlineParser
+    public class ItalicParser : SimpleInlineParser
     {
         public ItalicParser() : base("i", "em") { }
 

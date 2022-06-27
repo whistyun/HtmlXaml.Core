@@ -16,7 +16,11 @@ namespace Html2Markdown
         public Converter()
         {
             _manager = new ReplaceManager();
+        }
 
+        public Converter(ReplaceManager manager)
+        {
+            _manager = manager;
         }
 
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Html2Markdown.Parsers
 {
-    class ParagraphParser : ISimpleTagParser
+    public class ParagraphParser : ISimpleTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "p", "div" };
 

@@ -5,7 +5,7 @@ using Html2Markdown.Utils;
 
 namespace Html2Markdown.MdElements.Blocks
 {
-    internal class OrderListBlock : IMdBlock
+    public class OrderListBlock : IMdBlock
     {
         private const string Indent = "   ";
 

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Html2Markdown.MdElements.Blocks
 {
-    internal class PipeTableBlock : IMdBlock
+    public class PipeTableBlock : IMdBlock
     {
         public List<string?> Styles { get; }
         public IEnumerable<IMdBlock> Header { get; }

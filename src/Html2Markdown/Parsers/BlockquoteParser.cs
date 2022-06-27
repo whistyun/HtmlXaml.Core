@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.Parsers
 {
-    internal class BlockquoteParser : ISimpleTagParser
+    public class BlockquoteParser : ISimpleTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "blockquote" };
 

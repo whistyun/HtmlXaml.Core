@@ -8,7 +8,7 @@ namespace Html2Markdown.MdElements.Inlines
     // **text**  => <b>text</b>
     //              <strong>text</strong>
     //
-    internal class Italic : AccessoryInline
+    public class Italic : AccessoryInline
     {
         public Italic(IEnumerable<IMdInline> content) : base("*", content)
         {

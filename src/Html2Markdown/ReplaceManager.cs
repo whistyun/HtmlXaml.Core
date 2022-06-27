@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Html2Markdown
 {
-    internal class ReplaceManager
+    public class ReplaceManager
     {
         private Dictionary<string, List<ISimpleTagParser>> _bindParsers;
         private List<ITagParser> _parsers;
