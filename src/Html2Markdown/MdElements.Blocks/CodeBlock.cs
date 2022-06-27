@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Html2Markdown.Utils;
 
 namespace Html2Markdown.MdElements.Blocks
@@ -14,19 +14,24 @@ namespace Html2Markdown.MdElements.Blocks
         {
             Lang = lang;
 
-            var headMch = Regex.Match(code, "^\r?\n");
-            if (headMch.Success)
+            var buff = new StringBuilder(code.Length);
+
+            int idx = (code.Length > 0 && code[0] == '\n') ? 1 : 0;
+            int length = (code.Length > 0 && code[code.Length - 1] == '\n') ? code.Length - 1 : code.Length;
+
+
+            for (; idx < length; ++idx)
             {
-                code = code.Substring(headMch.Value.Length);
+                var c = code[idx];
+
+                if (c == '&' && code.TryDecode(ref idx, out var decoded))
+                {
+                    buff.Append(decoded);
+                }
+                else buff.Append(c);
             }
 
-            var tailMch = Regex.Match(code, "\r?\n$");
-            if (tailMch.Success)
-            {
-                code = code.Substring(0, code.Length - tailMch.Value.Length);
-            }
-
-            Code = WebUtility.HtmlDecode(code);
+            Code = buff.ToString();
         }
 
 
