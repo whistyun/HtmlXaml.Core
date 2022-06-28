@@ -49,7 +49,7 @@ namespace Html2Markdown
                     list = new();
                     _bindParsers.Add(tag.ToLower(), list);
                 }
-                list.Add(parser);
+                list.Insert(0, parser);
             }
         }
 
@@ -59,7 +59,7 @@ namespace Html2Markdown
                 Register(simpleParser);
 
             else
-                _parsers.Add(parser);
+                _parsers.Insert(0, parser);
         }
 
         public IEnumerable<IMdBlock> Parse(string htmldoc)
@@ -115,7 +115,7 @@ namespace Html2Markdown
         public IEnumerable<IMdElement> ParseJagging(IEnumerable<HtmlNode> nodes)
         {
             bool isPrevBlock = true;
-            IMdElement? lastElement = DummyBLock.Instance;
+            IMdElement? lastElement = EmptyBlock.Instance;
 
             foreach (var node in nodes)
             {

@@ -10,6 +10,7 @@ using Microsoft.DocAsCode.MarkdigEngine.Extensions;
 using System.Reflection;
 using HtmlAgilityPack;
 using System.Text.RegularExpressions;
+using Html2Markdown.Parsers;
 
 namespace Html2Markdown.Test
 {
@@ -34,14 +35,14 @@ namespace Html2Markdown.Test
         {
             var mdtxt = ReadText("List.md");
 
-            var htmltxt = Markdown.ToHtml(mdtxt);
+            var htmltxt = MarkdownToHtml(mdtxt);
 
             var converter = new Converter();
             var reMdtxt = converter.Convert(htmltxt);
 
             WriteText("List.temp.md", reMdtxt);
 
-            var reHtmltxt = Markdown.ToHtml(reMdtxt);
+            var reHtmltxt = MarkdownToHtml(reMdtxt);
 
             Assert.AreEqual(Normalize(htmltxt), Normalize(reHtmltxt));
         }
@@ -51,17 +52,38 @@ namespace Html2Markdown.Test
         {
             var mdtxt = ReadText("Code.md");
 
-            var htmltxt = Markdown.ToHtml(mdtxt);
+            var htmltxt = MarkdownToHtml(mdtxt);
 
             var converter = new Converter();
             var reMdtxt = converter.Convert(htmltxt);
 
             WriteText("Code.temp.md", reMdtxt);
 
-            var reHtmltxt = Markdown.ToHtml(reMdtxt);
+            var reHtmltxt = MarkdownToHtml(reMdtxt);
 
             Assert.AreEqual(Normalize(htmltxt), Normalize(reHtmltxt));
         }
+
+        [Test]
+        public void PipeTableTest()
+        {
+            var mdtxt = ReadText("PipeTable.md");
+
+            var htmltxt = MarkdownToHtml(mdtxt);
+
+            var manager = new ReplaceManager();
+            manager.Register(new PipeTableParser());
+            var converter = new Converter(manager);
+
+            var reMdtxt = converter.Convert(htmltxt);
+
+            WriteText("PipeTable.temp.md", reMdtxt);
+
+            var reHtmltxt = MarkdownToHtml(reMdtxt);
+
+            Assert.AreEqual(Normalize(htmltxt), Normalize(reHtmltxt));
+        }
+
 
         private string ReadText(string fileName)
         {
@@ -75,6 +97,9 @@ namespace Html2Markdown.Test
             File.WriteAllText(fullpath, content);
         }
 
+
+        private string MarkdownToHtml(string markdown)
+            => Markdown.ToHtml(markdown, _pipe);
 
         private string Normalize(string text)
         {

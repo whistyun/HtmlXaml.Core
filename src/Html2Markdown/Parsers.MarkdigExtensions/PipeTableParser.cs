@@ -53,7 +53,7 @@ namespace Html2Markdown.Parsers
             }
 
             generated = new[] { new PipeTableBlock(headStyle, headGrp.First(), details) };
-            return false;
+            return true;
         }
 
         private List<IMdBlock>[]? TableRows2Block(IEnumerable<HtmlNode> rows, ReplaceManager manager)
@@ -72,7 +72,17 @@ namespace Html2Markdown.Parsers
                     var parsed = manager.ParseAndGroup(cell.ChildNodes);
                     if (parsed.Count() > 1) return null;
 
-                    cells.Add(parsed.First());
+
+                    if (parsed.Count() == 0)
+                    {
+                        // empty cell
+                        cells.Add(EmptyBlock.Instance);
+                    }
+                    else
+                    {
+                        if (parsed.First() is not Paragraph) return null;
+                        cells.Add(parsed.First());
+                    }
                 }
 
                 list.Add(cells);

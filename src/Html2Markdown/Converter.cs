@@ -23,7 +23,6 @@ namespace Html2Markdown
             _manager = manager;
         }
 
-
         /// <summary>
         /// Converts Html contained in a file to a Markdown string
         /// </summary>

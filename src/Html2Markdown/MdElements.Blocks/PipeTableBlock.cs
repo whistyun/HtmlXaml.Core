@@ -47,7 +47,7 @@ namespace Html2Markdown.MdElements.Blocks
             {
                 rowBuff.Length = 0;
                 rowBuff.Append("| ");
-                rowBuff.Append(String.Join(" | ", row.Select(head => head.ToMarkdown().First())));
+                rowBuff.Append(String.Join(" | ", row.Select(head => head.ToMarkdown().FirstOrDefault() ?? "")));
                 rowBuff.Append(" |");
 
                 yield return rowBuff.ToString();

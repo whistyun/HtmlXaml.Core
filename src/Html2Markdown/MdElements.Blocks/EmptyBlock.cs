@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Html2Markdown.MdElements.Blocks
 {
-    internal class DummyBLock : IMdBlock
+    internal class EmptyBlock : IMdBlock
     {
-        public static readonly DummyBLock Instance = new();
+        public static readonly EmptyBlock Instance = new();
 
         public IEnumerable<string> ToMarkdown()
         {
-            throw new NotImplementedException();
+            yield break;
         }
     }
 }
