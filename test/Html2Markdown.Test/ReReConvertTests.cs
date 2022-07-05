@@ -11,6 +11,7 @@ using System.Reflection;
 using HtmlAgilityPack;
 using System.Text.RegularExpressions;
 using Html2Markdown.Parsers;
+using Html2Markdown.Parsers.MarkdigExtensions;
 
 namespace Html2Markdown.Test
 {
@@ -23,6 +24,7 @@ namespace Html2Markdown.Test
         {
             var builder = new MarkdownPipelineBuilder();
             builder.UseDocfxExtensions(new MarkdownContext());
+            builder.UseGridTables();
 
             _pipe = builder.Build();
 
@@ -84,6 +86,25 @@ namespace Html2Markdown.Test
             Assert.AreEqual(Normalize(htmltxt), Normalize(reHtmltxt));
         }
 
+        [Test]
+        public void GridTableTest()
+        {
+            var mdtxt = ReadText("GridTable.md");
+
+            var htmltxt = MarkdownToHtml(mdtxt);
+
+            var manager = new ReplaceManager();
+            manager.Register(new GridTableParser());
+            var converter = new Converter(manager);
+
+            var reMdtxt = converter.Convert(htmltxt);
+
+            WriteText("GridTable.temp.md", reMdtxt);
+
+            var reHtmltxt = MarkdownToHtml(reMdtxt);
+
+            Assert.AreEqual(Normalize(htmltxt), Normalize(reHtmltxt));
+        }
 
         private string ReadText(string fileName)
         {
