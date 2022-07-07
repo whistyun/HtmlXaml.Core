@@ -94,7 +94,7 @@ namespace Html2Markdown
 
             var jaggingResult = ParseJagging(contents);
 
-            return Blocking(jaggingResult);
+            return Grouping(jaggingResult);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Html2Markdown
         {
             var jaggingResult = ParseJagging(nodes);
 
-            return Blocking(jaggingResult);
+            return Grouping(jaggingResult);
         }
 
         /// <summary>
@@ -168,9 +168,9 @@ namespace Html2Markdown
             return Array.Empty<IMdElement>();
         }
 
-        private IEnumerable<IMdBlock> Blocking(IEnumerable<IMdElement> elements)
+        public IEnumerable<IMdBlock> Grouping(IEnumerable<IMdElement> elements)
         {
-            bool Grouping(IList<IMdInline> inlines)
+            bool Group(IList<IMdInline> inlines)
             {
                 // trim whiltepace plain
 
@@ -239,7 +239,7 @@ namespace Html2Markdown
                 // grouping inlines
                 if (stored.Count != 0)
                 {
-                    if (Grouping(stored))
+                    if (Group(stored))
                         yield return new Paragraph(stored.ToArray());
 
                     stored.Clear();
@@ -249,7 +249,7 @@ namespace Html2Markdown
             }
 
             if (stored.Count != 0)
-                if (Grouping(stored))
+                if (Group(stored))
                     yield return new Paragraph(stored.ToArray());
         }
     }

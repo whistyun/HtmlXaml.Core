@@ -86,5 +86,25 @@ namespace Html2Markdown.Utils
 
             return true;
         }
+
+        public static (List<HtmlNode> filterIn, List<HtmlNode> filterOut) Filter(this IEnumerable<HtmlNode> list, Func<HtmlNode, bool> filterFunc)
+        {
+            var filterIn = new List<HtmlNode>();
+            var filterOut = new List<HtmlNode>();
+
+            foreach (var e in list)
+            {
+                if (filterFunc(e))
+                {
+                    filterIn.Add(e);
+                }
+                else
+                {
+                    filterOut.Add(e);
+                }
+            }
+
+            return (filterIn, filterOut);
+        }
     }
 }

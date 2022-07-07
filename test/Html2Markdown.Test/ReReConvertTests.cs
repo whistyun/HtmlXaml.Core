@@ -12,69 +12,68 @@ using HtmlAgilityPack;
 using System.Text.RegularExpressions;
 using Html2Markdown.Parsers;
 using Html2Markdown.Parsers.MarkdigExtensions;
+using VerifyNUnit;
+using System.Runtime.CompilerServices;
 
 namespace Html2Markdown.Test
 {
     public class ReReConvertTests
     {
-        private string _testPath;
         private MarkdownPipeline _pipe;
+        private string _testPath;
 
         public ReReConvertTests()
         {
             var builder = new MarkdownPipelineBuilder();
-            builder.UseDocfxExtensions(new MarkdownContext());
-            builder.UseGridTables();
+            builder.UseAdvancedExtensions();
 
             _pipe = builder.Build();
-
             _testPath = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
         }
 
 
         [Test]
-        public void ListTest()
+        public void List()
         {
-            var mdtxt = ReadText("List.md");
+            var mdtxt = ReadText();
+            var htmltxt = Markdown.ToHtml(mdtxt);
 
+            var converter = new Converter();
+            var reMdtxt = converter.Convert(htmltxt);
+
+            var reHtmltxt = Markdown.ToHtml(reMdtxt);
+            Assert.AreEqual(Normalize(htmltxt), Normalize(reHtmltxt));
+        }
+
+        [Test]
+        public void Code()
+        {
+            var mdtxt = ReadText();
             var htmltxt = MarkdownToHtml(mdtxt);
 
             var converter = new Converter();
             var reMdtxt = converter.Convert(htmltxt);
 
-            WriteText("List.temp.md", reMdtxt);
-
             var reHtmltxt = MarkdownToHtml(reMdtxt);
-
             Assert.AreEqual(Normalize(htmltxt), Normalize(reHtmltxt));
         }
 
         [Test]
-        public void CodeTest()
+        public void PipeTable()
         {
-            var mdtxt = ReadText("Code.md");
-
-            var htmltxt = MarkdownToHtml(mdtxt);
-
-            var converter = new Converter();
-            var reMdtxt = converter.Convert(htmltxt);
-
-            WriteText("Code.temp.md", reMdtxt);
-
-            var reHtmltxt = MarkdownToHtml(reMdtxt);
-
-            Assert.AreEqual(Normalize(htmltxt), Normalize(reHtmltxt));
-        }
-
-        [Test]
-        public void PipeTableTest()
-        {
-            var mdtxt = ReadText("PipeTable.md");
-
+            var mdtxt = ReadText();
             var htmltxt = MarkdownToHtml(mdtxt);
 
             var manager = new ReplaceManager();
+            manager.Register(new CiteParser());
+            manager.Register(new DeletedParser());
+            manager.Register(new FigureParser());
+            manager.Register(new GridTableParser());
+            manager.Register(new InsertedParser());
+            manager.Register(new MarkedParser());
             manager.Register(new PipeTableParser());
+            manager.Register(new SubscriptParser());
+            manager.Register(new SuperscriptParser());
             var converter = new Converter(manager);
 
             var reMdtxt = converter.Convert(htmltxt);
@@ -87,14 +86,22 @@ namespace Html2Markdown.Test
         }
 
         [Test]
-        public void GridTableTest()
+        public void GridTable()
         {
-            var mdtxt = ReadText("GridTable.md");
+            var mdtxt = ReadText();
 
             var htmltxt = MarkdownToHtml(mdtxt);
 
             var manager = new ReplaceManager();
+            manager.Register(new CiteParser());
+            manager.Register(new DeletedParser());
+            manager.Register(new FigureParser());
             manager.Register(new GridTableParser());
+            manager.Register(new InsertedParser());
+            manager.Register(new MarkedParser());
+            manager.Register(new PipeTableParser());
+            manager.Register(new SubscriptParser());
+            manager.Register(new SuperscriptParser());
             var converter = new Converter(manager);
 
             var reMdtxt = converter.Convert(htmltxt);
@@ -106,9 +113,42 @@ namespace Html2Markdown.Test
             Assert.AreEqual(Normalize(htmltxt), Normalize(reHtmltxt));
         }
 
-        private string ReadText(string fileName)
+        [Test]
+        public void EmphasisExtra()
         {
-            var fullpath = Path.Combine(_testPath, @"..\..\..\ReReConvertTests", fileName);
+            var mdtxt = ReadText();
+
+            var htmltxt = MarkdownToHtml(mdtxt);
+
+            var manager = new ReplaceManager();
+            manager.Register(new CiteParser());
+            manager.Register(new DeletedParser());
+            manager.Register(new FigureParser());
+            manager.Register(new GridTableParser());
+            manager.Register(new InsertedParser());
+            manager.Register(new MarkedParser());
+            manager.Register(new PipeTableParser());
+            manager.Register(new SubscriptParser());
+            manager.Register(new SuperscriptParser());
+            var converter = new Converter(manager);
+
+            var reMdtxt = converter.Convert(htmltxt);
+
+            WriteText("EmphasisExtra.temp.md", reMdtxt);
+
+            var reHtmltxt = MarkdownToHtml(reMdtxt);
+
+            Assert.AreEqual(Normalize(htmltxt), Normalize(reHtmltxt));
+        }
+
+
+
+
+
+
+        private string ReadText([CallerMemberName] string fileName = null)
+        {
+            var fullpath = Path.Combine(_testPath, @"..\..\..\ReReConvertTests", fileName + ".md");
             return File.ReadAllText(fullpath);
         }
 
@@ -118,9 +158,10 @@ namespace Html2Markdown.Test
             File.WriteAllText(fullpath, content);
         }
 
-
-        private string MarkdownToHtml(string markdown)
-            => Markdown.ToHtml(markdown, _pipe);
+        private string MarkdownToHtml(string md)
+        {
+            return Markdown.ToHtml(md, _pipe);
+        }
 
         private string Normalize(string text)
         {
@@ -153,7 +194,5 @@ namespace Html2Markdown.Test
 
             return buff.ToString();
         }
-
-
     }
 }
