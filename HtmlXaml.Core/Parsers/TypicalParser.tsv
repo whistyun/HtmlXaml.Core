@@ -1,0 +1,16 @@
+﻿HtmlTag     FlowDocumentTag                     ChildType  TagName               ExtraModify
+blockquote  System.Windows.Documents.Section    Block      TagBlockquote
+strong      System.Windows.Documents.Bold       Inline     TagBoldSpan
+b           System.Windows.Documents.Bold       Inline     TagBoldSpan
+a           System.Windows.Documents.Hyperlink  Inline     Hyperlink
+em          System.Windows.Documents.Italic     Inline     TagItalicSpan
+i           System.Windows.Documents.Italic     Inline     TagItalicSpan
+br          System.Windows.Documents.LineBreak  Inline
+cite        System.Windows.Documents.Span       Inline     TagCite
+del         System.Windows.Documents.Span       Inline     TagStrikethroughSpan  Strikethrough
+footer      System.Windows.Documents.Section    Block      TagFooter
+u           System.Windows.Documents.Underline  Inline     TagUnderlineSpan
+ins         System.Windows.Documents.Underline  Inline     TagUnderlineSpan
+mark        System.Windows.Documents.Span       Inline     TagMark
+sub         System.Windows.Documents.Run        String     TagSubscript          Subscript
+sup         System.Windows.Documents.Run        String     TagSuperscript        Superscript
