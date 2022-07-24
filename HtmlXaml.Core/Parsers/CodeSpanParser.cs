@@ -10,7 +10,7 @@ namespace HtmlXaml.Core.Parsers
 {
     public class CodeSpanParser : ISimpleTagParser
     {
-        public IEnumerable<string> SupportTag => new[] { "code" };
+        public IEnumerable<string> SupportTag => new[] { "code", "kbd" , "var" };
 
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
         {

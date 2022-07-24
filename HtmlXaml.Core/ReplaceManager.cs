@@ -22,24 +22,28 @@ namespace HtmlXaml.Core
             _bindParsers = new();
             _parsers = new();
 
-            UnknownTags = UnknownTagsOption.PassThrough;
+            UnknownTags = UnknownTagsOption.Drop;
 
             Register(new TagIgnoreParser());
             Register(new CommentParsre());
 
             Register(new ImageParser());
+
+            Register(new CodeBlockParser());
             Register(new CodeSpanParser());
 
-            Register(new HeadingParser());
             Register(new OrderListParser());
             Register(new UnorderListParser());
-            Register(new ParagraphParser());
             Register(new TextNodeParser());
-            Register(new CodeBlockParser());
             Register(new HorizontalRuleParser());
 
             Register(new FigureParser());
             Register(new GridTableParser());
+
+            Register(new InputParser());
+            Register(new ButtonParser());
+            Register(new TextAreaParser());
+            Register(new ProgressParser());
 
             Register(new TypicalParser());
         }

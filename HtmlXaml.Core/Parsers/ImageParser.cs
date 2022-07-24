@@ -30,7 +30,7 @@ namespace HtmlXaml.Core.Parsers
 
             if (imgSource is null)
             {
-                generated = new[] { new Run("!" + alt ?? link) { Foreground = Brushes.Red } };
+                generated = new[] { new Run("!" + (alt ?? link)) { Foreground = Brushes.Red } };
             }
             else
             {

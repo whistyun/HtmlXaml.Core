@@ -11,6 +11,7 @@ namespace HtmlXaml.Core
         TagEvenTableRow,
         TagOddTableRow,
         TagTableFooter,
+        TagTableCaption,
 
         TagBlockquote,
         TagBoldSpan,

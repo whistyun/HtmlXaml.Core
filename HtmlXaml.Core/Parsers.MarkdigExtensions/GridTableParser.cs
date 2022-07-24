@@ -73,8 +73,25 @@ namespace HtmlXaml.Core.Parsers.MarkdigExtensions
                 table.Columns.Add(new TableColumn());
             }
 
+            var captions = node.SelectNodes("./caption");
+            if (captions is not null)
+            {
+                var tableSec = new Section();
+                foreach (var cap in captions)
+                {
+                    tableSec.Blocks.AddRange(manager.ParseAndGroup(captions[0].ChildNodes));
+                }
 
-            generated = new[] { table };
+                tableSec.Blocks.Add(table);
+                tableSec.Tag = manager.GetTag(Tags.TagTableCaption);
+
+                generated = new[] { tableSec };
+            }
+            else
+            {
+                generated = new[] { table };
+            }
+
             return true;
         }
 
@@ -138,7 +155,7 @@ namespace HtmlXaml.Core.Parsers.MarkdigExtensions
 
                 int colCount = list.Sum(e => e.ColSpan);
 
-                foreach (var cellTag in rowTag.ChildNodes.CollectTag("tr", "th"))
+                foreach (var cellTag in rowTag.ChildNodes.CollectTag("td", "th"))
                 {
                     var cell = new TableCell();
                     cell.Blocks.AddRange(manager.ParseAndGroup(cellTag.ChildNodes));
