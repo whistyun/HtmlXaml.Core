@@ -2,17 +2,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Documents;
-using HtmlXaml.Core.Utils;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class CodeSpanParser : ISimpleTagParser
+    public class CodeSpanParser : IInlineTagParser, ISimpleTag
     {
-        public IEnumerable<string> SupportTag => new[] { "code", "kbd" , "var" };
+        public IEnumerable<string> SupportTag => new[] { "code", "kbd", "var" };
 
-        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        {
+            var rtn = TryReplace(node, manager, out var list);
+            generated = list;
+            return rtn;
+        }
+
+        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Inline> generated)
         {
             // inline code support only Plain
             if (node.ChildNodes.All(e => e is HtmlCommentNode or HtmlTextNode))
@@ -24,24 +29,8 @@ namespace HtmlXaml.Core.Parsers
                 return true;
             }
 
-            // block code support only Plain and Linebreak
-            if (HasOnlyPlain(node))
-            {
-                generated = new[] { DocUtils.CreateCodeBlock(null, node.InnerText, manager) };
-                return true;
-            }
-
-            generated = Array.Empty<TextElement>();
+            generated = Array.Empty<Inline>();
             return false;
         }
-
-        private bool HasOnlyPlain(HtmlNode node)
-            => node.ChildNodes.All(e => e.NodeType switch
-            {
-                HtmlNodeType.Comment => true,
-                HtmlNodeType.Text => true,
-                HtmlNodeType.Element => String.Equals(e.Name, "br", StringComparison.OrdinalIgnoreCase),
-                _ => false
-            });
     }
 }

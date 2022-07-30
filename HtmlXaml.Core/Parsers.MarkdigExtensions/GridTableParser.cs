@@ -9,13 +9,20 @@ using HtmlXaml.Core.Utils;
 
 namespace HtmlXaml.Core.Parsers.MarkdigExtensions
 {
-    public class GridTableParser : ISimpleTagParser, IHasPriority
+    public class GridTableParser : IBlockTagParser, ISimpleTag, IHasPriority
     {
-        public int Priority => TagParserExt.DefaultPriority + 1000;
+        public int Priority => HasPriority.DefaultPriority + 1000;
 
         public IEnumerable<string> SupportTag => new[] { "table" };
 
-        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        {
+            var rtn = TryReplace(node, manager, out var list);
+            generated = list;
+            return rtn;
+        }
+
+        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Block> generated)
         {
             var table = new Table();
 

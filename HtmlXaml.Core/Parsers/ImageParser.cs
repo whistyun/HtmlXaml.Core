@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -9,17 +10,24 @@ using System.Windows.Media.Imaging;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class ImageParser : ISimpleTagParser
+    public class ImageParser : IInlineTagParser, ISimpleTag
     {
         public IEnumerable<string> SupportTag => new[] { "img", "image" };
 
-        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        {
+            var rtn = TryReplace(node, manager, out var list);
+            generated = list;
+            return rtn;
+        }
+
+        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Inline> generated)
         {
             var link = node.Attributes["src"]?.Value;
             var alt = node.Attributes["alt"]?.Value;
             if (link is null)
             {
-                generated = Array.Empty<TextElement>();
+                generated = Array.Empty<Inline>();
                 return false;
             }
             var title = node.Attributes["title"]?.Value;
@@ -45,7 +53,7 @@ namespace HtmlXaml.Core.Parsers
                     binding.Mode = BindingMode.OneWay;
 
                     BindingExpressionBase bindingExpression = BindingOperations.SetBinding(image, Image.WidthProperty, binding);
-                    EventHandler downloadCompletedHandler = null;
+                    EventHandler? downloadCompletedHandler = null;
                     downloadCompletedHandler = (sender, e) =>
                     {
                         imgSource.DownloadCompleted -= downloadCompletedHandler;

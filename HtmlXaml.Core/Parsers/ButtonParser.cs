@@ -1,16 +1,25 @@
 ﻿using HtmlAgilityPack;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class ButtonParser : ISimpleTagParser
+    public class ButtonParser : IInlineTagParser, ISimpleTag
     {
         public IEnumerable<string> SupportTag => new[] { "button" };
 
-        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        {
+            var rtn = TryReplace(node, manager, out var list);
+            generated = list;
+            return rtn;
+        }
+
+        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Inline> generated)
         {
             var doc = new FlowDocument();
             doc.Blocks.AddRange(manager.ParseAndGroup(node.ChildNodes));

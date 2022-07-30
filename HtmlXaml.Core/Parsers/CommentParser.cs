@@ -8,13 +8,25 @@ namespace HtmlXaml.Core.Parsers
     /// <summary>
     /// remove comment element
     /// </summary>
-    public class CommentParsre : ISimpleTagParser
+    public class CommentParsre : IBlockTagParser, IInlineTagParser, ISimpleTag
     {
         public IEnumerable<string> SupportTag => new[] { HtmlNode.HtmlNodeTypeNameComment };
 
-        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
         {
             generated = Array.Empty<TextElement>();
+            return true;
+        }
+
+        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Block> generated)
+        {
+            generated = Array.Empty<Block>();
+            return true;
+        }
+
+        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Inline> generated)
+        {
+            generated = Array.Empty<Inline>();
             return true;
         }
     }

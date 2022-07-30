@@ -20,11 +20,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Parsers\TypicalParser.tsv" />
+    <None Remove="Parsers\TypicalBlockParser.tsv" />
+    <None Remove="Parsers\TypicalInlineParser.tsv" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Parsers\TypicalParser.tsv" />
+    <EmbeddedResource Include="Parsers\TypicalInlineParser.tsv" />
+    <EmbeddedResource Include="Parsers\TypicalBlockParser.tsv" />
   </ItemGroup>
 
   <ItemGroup>

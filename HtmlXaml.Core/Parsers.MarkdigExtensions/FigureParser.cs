@@ -7,11 +7,18 @@ using System.Windows.Documents;
 
 namespace HtmlXaml.Core.Parsers.MarkdigExtensions
 {
-    public class FigureParser : ISimpleTagParser
+    public class FigureParser : IBlockTagParser, ISimpleTag
     {
         public IEnumerable<string> SupportTag => new[] { "figure" };
 
-        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        {
+            var rtn = TryReplace(node, manager, out var list);
+            generated = list;
+            return rtn;
+        }
+
+        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Block> generated)
         {
             (var captionList, var contentList) =
                 node.ChildNodes

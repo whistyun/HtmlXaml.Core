@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Documents;
 
 namespace HtmlXaml.Core.Parsers
@@ -9,7 +10,17 @@ namespace HtmlXaml.Core.Parsers
         bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated);
     }
 
-    public interface ISimpleTagParser : ITagParser
+    public interface IInlineTagParser : ITagParser
+    {
+        bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Inline> generated);
+    }
+
+    public interface IBlockTagParser : ITagParser
+    {
+        bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Block> generated);
+    }
+
+    public interface ISimpleTag
     {
         IEnumerable<string> SupportTag { get; }
     }
@@ -19,13 +30,11 @@ namespace HtmlXaml.Core.Parsers
         int Priority { get; }
     }
 
-    public static class TagParserExt
+    public static class HasPriority
     {
         public const int DefaultPriority = 10000;
 
         public static int GetPriority(this ITagParser parser)
-        {
-            return parser is IHasPriority prop ? prop.Priority : DefaultPriority;
-        }
+            => parser is IHasPriority prop ? prop.Priority : HasPriority.DefaultPriority;
     }
 }

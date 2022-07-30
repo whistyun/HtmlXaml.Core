@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows;
@@ -10,11 +11,18 @@ using System.Windows.Media;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class InputParser : ISimpleTagParser
+    public class InputParser : IInlineTagParser, ISimpleTag
     {
         public IEnumerable<string> SupportTag => new[] { "input" };
 
-        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        {
+            var rtn = TryReplace(node, manager, out var list);
+            generated = list;
+            return rtn;
+        }
+
+        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Inline> generated)
         {
             var type = node.Attributes["type"]?.Value ?? "text";
 
@@ -109,7 +117,6 @@ namespace HtmlXaml.Core.Parsers
                     inline = new InlineUIContainer(slider);
                     break;
             }
-
 
             generated = new[] { inline };
             return true;

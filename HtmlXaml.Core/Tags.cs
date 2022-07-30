@@ -23,6 +23,7 @@ namespace HtmlXaml.Core
         TagSubscript,
         TagSuperscript,
         TagUnderlineSpan,
+        TagHyperlink,
 
         TagFigure,
         TagRuleSingle,
@@ -35,6 +36,12 @@ namespace HtmlXaml.Core
         TagHeading6,
 
         TagCode,
-        TagCodeBlock
+        TagCodeBlock,
+        TagAddress,
+        TagArticle,
+        TagAside,
+        TagCenter,
+        TagAbbr,
+        TagBdi
     }
 }

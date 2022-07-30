@@ -5,51 +5,80 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Documents;
-using System.Windows.Markup;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class TypicalParser : ITagParser
+    public class TypicalParseInfo
     {
-        Dictionary<string, ParseInfo> _infos;
-        Dictionary<string, MethodInfo> _methods;
+        public string HtmlTag { get; }
+        public string FlowDocumentTagText { get; }
+        public Type? FlowDocumentTag { get; }
+        public string? TagNameReference { get; }
+        public Tags TagName { get; }
+        public string? ExtraModifyName { get; }
 
-        public TypicalParser()
+        private MethodInfo? _method;
+
+        public TypicalParseInfo(string[] line)
         {
-            _infos = new();
-            _methods = new();
+            FlowDocumentTagText = line[1];
 
-            using var stream = Assembly.GetExecutingAssembly()
-                                       .GetManifestResourceStream("HtmlXaml.Core.Parsers.TypicalParser.tsv");
-            using var reader = new StreamReader(stream!);
-
-
-            reader.ReadLine();
-            while (reader.ReadLine() is string line)
+            if (FlowDocumentTagText.StartsWith("#"))
             {
-                var elements = line.Split('|').Select(t => t.Trim()).ToArray();
-                var info = new ParseInfo(elements);
-                _infos[info.HtmlTag] = info;
+                FlowDocumentTag = null;
+            }
+            else
+            {
+                Type? elementType = AppDomain.CurrentDomain
+                                             .GetAssemblies()
+                                             .Select(asm => asm.GetType(FlowDocumentTagText))
+                                             .OfType<Type>()
+                                             .FirstOrDefault();
+
+                if (elementType is null)
+                    throw new ArgumentException($"Failed to load type '{line[1]}'");
+
+                FlowDocumentTag = elementType;
+            }
+
+
+            HtmlTag = line[0];
+            TagNameReference = GetArrayAt(line, 2);
+            ExtraModifyName = GetArrayAt(line, 3);
+
+            if (TagNameReference is not null)
+            {
+                TagName = (Tags)Enum.Parse(typeof(Tags), TagNameReference);
+            }
+
+            if (ExtraModifyName is not null)
+            {
+                _method = this.GetType().GetMethod("ExtraModify" + ExtraModifyName);
+
+                if (_method is null)
+                    throw new InvalidOperationException("unknown method ExtraModify" + ExtraModifyName);
+            }
+
+            string? GetArrayAt(string[] array, int idx)
+            {
+                if (idx < array.Length
+                    && !string.IsNullOrWhiteSpace(array[idx]))
+                {
+                    return array[idx];
+                }
+                return null;
             }
         }
 
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
         {
-            if (!_infos.TryGetValue(node.Name.ToLower(), out ParseInfo? info))
-            {
-                generated = Array.Empty<TextElement>();
-                return false;
-            }
-
-
             // create instance
 
-            if (info.FlowDocumentTag is null)
+            if (FlowDocumentTag is null)
             {
-                switch (info.FlowDocumentTagText)
+                switch (FlowDocumentTagText)
                 {
                     case "#blocks":
                         generated = manager.ParseAndGroup(node.ChildNodes);
@@ -77,7 +106,7 @@ namespace HtmlXaml.Core.Parsers
             }
             else
             {
-                var tag = (TextElement)Activator.CreateInstance(info.FlowDocumentTag)!;
+                var tag = (TextElement)Activator.CreateInstance(FlowDocumentTag)!;
 
                 var cntInlines = (tag as Paragraph)?.Inlines ?? (tag as Span)?.Inlines;
                 if (cntInlines is not null)
@@ -111,33 +140,20 @@ namespace HtmlXaml.Core.Parsers
 
             // apply tag
 
-            if (info.TagNameReference is not null)
+            if (TagNameReference is not null)
             {
-                var tagVal = manager.GetTag((Tags)Enum.Parse(typeof(Tags), info.TagNameReference));
-
                 foreach (var tag in generated)
                 {
-                    tag.Tag = tagVal;
+                    tag.Tag = manager.GetTag(TagName);
                 }
             }
 
             // extra modify
-
-            if (info.ExtraModifyName is not null)
+            if (_method is not null)
             {
-                if (! _methods.TryGetValue(info.ExtraModifyName, out var method))
-                {
-                    method = this.GetType().GetMethod("ExtraModify" + info.ExtraModifyName);
-
-                    if (method is null)
-                        throw new InvalidOperationException("unknown method ExtraModify" + info.ExtraModifyName);
-
-                    _methods[info.ExtraModifyName] = method;
-                }
-
                 foreach (var tag in generated)
                 {
-                    method.Invoke(this, new object[] { tag, node, manager });
+                    _method.Invoke(this, new object[] { tag, node, manager });
                 }
             }
 
@@ -178,54 +194,32 @@ namespace HtmlXaml.Core.Parsers
                 span.ToolTip = title;
         }
 
-
-
-        class ParseInfo
+        public void ExtraModifyCenter(Section center, HtmlNode node, ReplaceManager manager)
         {
-            public string HtmlTag { get; }
-            public string FlowDocumentTagText { get; }
-            public Type? FlowDocumentTag { get; }
-            public string? TagNameReference { get; }
-            public string? ExtraModifyName { get; }
+            center.TextAlignment = TextAlignment.Center;
+        }
 
-            public ParseInfo(string[] line)
+        public static Dictionary<string, TypicalParseInfo> Load(string resourcePath)
+        {
+            using var stream = Assembly.GetExecutingAssembly()
+                                       .GetManifestResourceStream(resourcePath);
+
+            if (stream is null)
+                throw new ArgumentException($"resource not found: '{resourcePath}'");
+
+            var dic = new Dictionary<string, TypicalParseInfo>();
+
+            using var reader = new StreamReader(stream!);
+            while (reader.ReadLine() is string line)
             {
-                FlowDocumentTagText = line[1];
+                if (line.StartsWith("#")) continue;
 
-                if (FlowDocumentTagText.StartsWith("#"))
-                {
-                    FlowDocumentTag = null;
-                }
-                else
-                {
-                    Type? elementType = AppDomain.CurrentDomain
-                                                 .GetAssemblies()
-                                                 .Select(asm => asm.GetType(FlowDocumentTagText))
-                                                 .OfType<Type>()
-                                                 .FirstOrDefault();
-
-                    if (elementType is null)
-                        throw new ArgumentException($"Failed to load type '{line[1]}'");
-
-                    FlowDocumentTag = elementType;
-                }
-
-
-                HtmlTag = line[0];
-                TagNameReference = GetArrayAt(line, 2);
-                ExtraModifyName = GetArrayAt(line, 3);
-
-
-                string? GetArrayAt(string[] array, int idx)
-                {
-                    if (idx < array.Length
-                        && !string.IsNullOrWhiteSpace(array[idx]))
-                    {
-                        return array[idx];
-                    }
-                    return null;
-                }
+                var elements = line.Split('|').Select(t => t.Trim()).ToArray();
+                var info = new TypicalParseInfo(elements);
+                dic[info.HtmlTag] = info;
             }
+
+            return dic;
         }
     }
 }

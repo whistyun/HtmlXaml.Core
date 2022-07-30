@@ -4,14 +4,22 @@ using System.Collections.Generic;
 using System.Windows.Documents;
 using HtmlXaml.Core.Utils;
 using System.Windows;
+using System.Linq;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class OrderListParser : ISimpleTagParser
+    public class OrderListParser : IBlockTagParser, ISimpleTag
     {
         public IEnumerable<string> SupportTag => new[] { "ol" };
 
-        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        {
+            var rtn = TryReplace(node, manager, out var list);
+            generated = list;
+            return rtn;
+        }
+
+        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Block> generated)
         {
             var list = new List();
             list.MarkerStyle = TextMarkerStyle.Decimal;

@@ -1,15 +1,23 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Documents;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class TextNodeParser : ISimpleTagParser
+    public class TextNodeParser : IInlineTagParser, ISimpleTag
     {
         public IEnumerable<string> SupportTag => new[] { HtmlNode.HtmlNodeTypeNameText };
 
-        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        {
+            var rtn = TryReplace(node, manager, out var list);
+            generated = list;
+            return rtn;
+        }
+
+        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Inline> generated)
         {
             if (node is HtmlTextNode textNode)
             {
@@ -17,7 +25,7 @@ namespace HtmlXaml.Core.Parsers
                 return true;
             }
 
-            generated = Array.Empty<TextElement>();
+            generated = Array.Empty<Inline>();
             return false;
         }
     }

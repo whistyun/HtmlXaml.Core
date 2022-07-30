@@ -8,18 +8,25 @@ using System.Windows.Documents;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class CodeBlockParser : ISimpleTagParser
+    public class CodeBlockParser : IBlockTagParser, ISimpleTag
     {
         public IEnumerable<string> SupportTag => new[] { "pre" };
 
-        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
         {
-            generated = Array.Empty<TextElement>();
+            var rtn = TryReplace(node, manager, out var list);
+            generated = list;
+            return rtn;
+        }
+
+        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Block> generated)
+        {
+            generated = Array.Empty<Block>();
 
             var codeElements = node.ChildNodes.CollectTag("code");
             if (codeElements.Count != 0)
             {
-                var rslt = new List<TextElement>();
+                var rslt = new List<Block>();
 
                 foreach (var codeElement in codeElements)
                 {

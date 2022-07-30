@@ -14,11 +14,17 @@ namespace HtmlXaml.Core
 {
     public class ReplaceManager : IUriContext
     {
-        private Dictionary<string, List<ISimpleTagParser>> _bindParsers;
+        private Dictionary<string, List<IInlineTagParser>> _inlineBindParsers;
+        private List<IInlineTagParser> _inlineParsers;
+
+        private Dictionary<string, List<ITagParser>> _bindParsers;
         private List<ITagParser> _parsers;
 
         public ReplaceManager()
         {
+            _inlineBindParsers = new();
+            _inlineParsers = new();
+
             _bindParsers = new();
             _parsers = new();
 
@@ -26,26 +32,22 @@ namespace HtmlXaml.Core
 
             Register(new TagIgnoreParser());
             Register(new CommentParsre());
-
             Register(new ImageParser());
-
             Register(new CodeBlockParser());
+            Register(new IndendCodeBlockParser());
             Register(new CodeSpanParser());
-
             Register(new OrderListParser());
             Register(new UnorderListParser());
             Register(new TextNodeParser());
             Register(new HorizontalRuleParser());
-
             Register(new FigureParser());
             Register(new GridTableParser());
-
             Register(new InputParser());
             Register(new ButtonParser());
             Register(new TextAreaParser());
             Register(new ProgressParser());
-
-            Register(new TypicalParser());
+            Register(new TypicalBlockParser());
+            Register(new TypicalInlineParser());
         }
 
         public UnknownTagsOption UnknownTags { get; set; }
@@ -53,39 +55,53 @@ namespace HtmlXaml.Core
         public Uri BaseUri { get; set; }
         public string AssetPathRoot { get; set; }
 
-        public void Register(ISimpleTagParser parser)
+        public void Register(ITagParser parser)
         {
-            foreach (var tag in parser.SupportTag)
+            if (parser is IInlineTagParser inlineParser)
             {
-                if (!_bindParsers.TryGetValue(tag.ToLower(), out var list))
-                {
-                    list = new();
-                    _bindParsers.Add(tag.ToLower(), list);
-                }
-
-                InsertWithPriority(list, parser);
+                PrivateRegister(inlineParser, _inlineParsers, _inlineBindParsers);
+                PrivateRegister(parser, _parsers, _bindParsers);
+            }
+            else if (parser is IBlockTagParser blockParser)
+            {
+                PrivateRegister(parser, _parsers, _bindParsers);
             }
         }
 
-        public void Register(ITagParser parser)
+        private void PrivateRegister<T>(T parser, List<T> parsers, Dictionary<string, List<T>> bindParsers)
         {
-            if (parser is ISimpleTagParser simpleParser)
-                Register(simpleParser);
+            if (parser is ISimpleTag tags)
+            {
+                foreach (var tag in tags.SupportTag)
+                {
+                    if (!bindParsers.TryGetValue(tag.ToLower(), out var list))
+                    {
+                        list = new();
+                        bindParsers.Add(tag.ToLower(), list);
+                    }
 
+                    InsertWithPriority(list, parser);
+                }
+            }
             else
-                InsertWithPriority(_parsers, parser);
+            {
+                InsertWithPriority(parsers, parser);
+            }
         }
 
-        private void InsertWithPriority<T>(List<T> list, T parser) where T : ITagParser
+        private void InsertWithPriority<T>(List<T> list, T parser)
         {
-            int parserPriority = parser.GetPriority();
+            static int GetPriority(object? p)
+                => p is IHasPriority prop ? prop.Priority : HasPriority.DefaultPriority;
+
+            int parserPriority = GetPriority(parser);
 
             int count = list.Count;
             for (int i = 0; i < count; ++i)
             {
                 var elmnt = list[i];
 
-                if (parserPriority <= elmnt.GetPriority())
+                if (parserPriority <= GetPriority(elmnt))
                 {
                     list.Insert(i, parser);
                     return;
@@ -231,7 +247,7 @@ namespace HtmlXaml.Core
                     && String.IsNullOrWhiteSpace(txt.Text))
                     continue;
 
-                foreach (var element in ParseIt(node))
+                foreach (var element in ParseBlockAndInline(node))
                 {
                     lastElement = element;
                     yield return element;
@@ -241,13 +257,27 @@ namespace HtmlXaml.Core
             }
         }
 
+        public IEnumerable<Inline> ParseInline(IEnumerable<HtmlNode> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                if (node.IsComment())
+                    continue;
+
+                foreach (var element in ParseInline(node))
+                {
+                    yield return element;
+                }
+            }
+        }
+
         /// <summary>
         /// Convert a html tag to an element of markdown.
         /// Only tag node and text node are accepted.
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        private IEnumerable<TextElement> ParseIt(HtmlNode node)
+        private IEnumerable<TextElement> ParseBlockAndInline(HtmlNode node)
         {
             if (_bindParsers.TryGetValue(node.Name.ToLower(), out var binds))
             {
@@ -281,6 +311,47 @@ namespace HtmlXaml.Core
 
                 case UnknownTagsOption.Bypass:
                     return ParseJagging(node.ChildNodes);
+
+                case UnknownTagsOption.Raise:
+                default:
+                    throw new UnknownTagException(node);
+            }
+        }
+
+        private IEnumerable<Inline> ParseInline(HtmlNode node)
+        {
+            if (_inlineBindParsers.TryGetValue(node.Name.ToLower(), out var binds))
+            {
+                foreach (var bind in binds)
+                {
+                    if (bind.TryReplace(node, this, out var parsed))
+                    {
+                        return parsed;
+                    }
+                }
+            }
+
+            foreach (var parser in _inlineParsers)
+            {
+                if (parser.TryReplace(node, this, out var parsed))
+                {
+                    return parsed;
+                }
+            }
+
+
+            switch (UnknownTags)
+            {
+                case UnknownTagsOption.PassThrough:
+                    return HtmlUtils.IsBlockTag(node.Name) ?
+                        new[] { new Run() { Text = node.OuterHtml } } :
+                        new[] { new Run(node.OuterHtml) };
+
+                case UnknownTagsOption.Drop:
+                    return Array.Empty<Inline>();
+
+                case UnknownTagsOption.Bypass:
+                    return ParseInline(node.ChildNodes);
 
                 case UnknownTagsOption.Raise:
                 default:

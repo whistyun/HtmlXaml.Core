@@ -6,11 +6,18 @@ using System.Windows;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class UnorderListParser : ISimpleTagParser
+    public class UnorderListParser : IBlockTagParser, ISimpleTag
     {
         public IEnumerable<string> SupportTag => new[] { "ul" };
 
-        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
+        {
+            var rtn = TryReplace(node, manager, out var list);
+            generated = list;
+            return rtn;
+        }
+
+        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Block> generated)
         {
             var list = new List();
             list.MarkerStyle = TextMarkerStyle.Disc;
