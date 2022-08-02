@@ -300,18 +300,24 @@ namespace HtmlXaml.Core
             }
         }
 
-        public IEnumerable<Block> ParseBlock(string node)
+        public IEnumerable<Block> ParseBlock(string html)
         {
             var doc = new HtmlDocument();
-            doc.LoadHtml(node);
-            return ParseBlock(doc.DocumentNode);
+            doc.LoadHtml(html);
+
+            foreach (var node in doc.DocumentNode.ChildNodes)
+                foreach (var block in ParseBlock(node))
+                    yield return block;
         }
 
-        public IEnumerable<Inline> ParseInline(string node)
+        public IEnumerable<Inline> ParseInline(string html)
         {
             var doc = new HtmlDocument();
-            doc.LoadHtml(node);
-            return ParseInline(doc.DocumentNode);
+            doc.LoadHtml(html);
+
+            foreach (var node in doc.DocumentNode.ChildNodes)
+                foreach (var inline in ParseInline(node))
+                    yield return inline;
         }
 
         public IEnumerable<Block> ParseBlock(HtmlNode node)

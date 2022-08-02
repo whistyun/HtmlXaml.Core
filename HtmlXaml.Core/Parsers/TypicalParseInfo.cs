@@ -81,17 +81,17 @@ namespace HtmlXaml.Core.Parsers
                 switch (FlowDocumentTagText)
                 {
                     case "#blocks":
-                        generated = manager.ParseAndGroup(node.ChildNodes);
+                        generated = manager.ParseAndGroup(node.ChildNodes).ToArray();
                         break;
 
                     case "#jagging":
-                        generated = manager.ParseJagging(node.ChildNodes);
+                        generated = manager.ParseJagging(node.ChildNodes).ToArray();
                         break;
 
                     case "#inlines":
                         if (manager.ParseJagging(node.ChildNodes).TryCast<Inline>(out var inlines))
                         {
-                            generated = inlines;
+                            generated = inlines.ToArray();
                             break;
                         }
                         else
