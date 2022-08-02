@@ -1,6 +1,6 @@
-# MarkdownFromHtml
+# HtmlXaml.Core
 
-Converts HTML to [Markdown](http://daringfireball.net/projects/markdown/syntax).
+Converts HTML to FlowDocument.
 
 
 ## Support
@@ -28,54 +28,6 @@ And extensions add
 | footer          | `<footer>`                         | subscript     | `<sub>`  |
 | pipe table      | `<table>`                          | superscript   | `<sup>`  |
 | grid table      | `<table>`                          | marked text   | `<mark>` |
-
-## Nuget
-
-https://www.nuget.org/packages/MarkdownFromHtml
-
-
-## Usage
-
-### Strings
-
-```csharp
-var html = "Something to <strong>convert</strong>";
-var converter = new Converter();
-var markdown = converter.Convert(html);
-```
-
-
-### Files
-
-```csharp
-var path = "file.html";
-var converter = new Converter();
-var markdown = converter.ConvertFile(path);
-```
-
-
-## Customise
-
-`ReplaceManager` used to build the converter accepts other parsers.
-It can enable extension syntax; table, del(strikethrough), etc.
-
-```cs
-// using MarkdownFromHtml.Parsers.MarkdigExtensions;
-
-var manager = new ReplaceManager();
-manager.Register(new GridTableParser());
-manager.Register(new PipeTableParser());
-
-ver converter = new Converter(manager);
-```
-
-
-## Try it
-
-If you can run WebAssembly, please see [demoapps](https://whistyun.github.io/MarkdownFromHtml/demo/index.html).
-
-![screenshot](docs/demo_shot.png)
-
 
 ## License
 

@@ -10,7 +10,7 @@ using System.Windows.Media.Imaging;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class ImageParser : IInlineTagParser, ISimpleTag
+    public class ImageParser : IInlineTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "img", "image" };
 

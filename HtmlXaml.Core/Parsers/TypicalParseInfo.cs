@@ -199,7 +199,7 @@ namespace HtmlXaml.Core.Parsers
             center.TextAlignment = TextAlignment.Center;
         }
 
-        public static Dictionary<string, TypicalParseInfo> Load(string resourcePath)
+        public static IEnumerable<TypicalParseInfo> Load(string resourcePath)
         {
             using var stream = Assembly.GetExecutingAssembly()
                                        .GetManifestResourceStream(resourcePath);
@@ -207,19 +207,14 @@ namespace HtmlXaml.Core.Parsers
             if (stream is null)
                 throw new ArgumentException($"resource not found: '{resourcePath}'");
 
-            var dic = new Dictionary<string, TypicalParseInfo>();
-
             using var reader = new StreamReader(stream!);
             while (reader.ReadLine() is string line)
             {
                 if (line.StartsWith("#")) continue;
 
                 var elements = line.Split('|').Select(t => t.Trim()).ToArray();
-                var info = new TypicalParseInfo(elements);
-                dic[info.HtmlTag] = info;
+                yield return new TypicalParseInfo(elements);
             }
-
-            return dic;
         }
     }
 }

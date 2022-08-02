@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class OrderListParser : IBlockTagParser, ISimpleTag
+    public class OrderListParser : IBlockTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "ol" };
 

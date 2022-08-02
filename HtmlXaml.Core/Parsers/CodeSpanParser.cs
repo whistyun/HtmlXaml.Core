@@ -6,7 +6,7 @@ using System.Windows.Documents;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class CodeSpanParser : IInlineTagParser, ISimpleTag
+    public class CodeSpanParser : IInlineTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "code", "kbd", "var" };
 

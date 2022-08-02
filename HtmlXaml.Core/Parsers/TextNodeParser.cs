@@ -6,7 +6,7 @@ using System.Windows.Documents;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class TextNodeParser : IInlineTagParser, ISimpleTag
+    public class TextNodeParser : IInlineTagParser
     {
         public IEnumerable<string> SupportTag => new[] { HtmlNode.HtmlNodeTypeNameText };
 

@@ -5,7 +5,7 @@ using System.Windows.Documents;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class TagIgnoreParser : IBlockTagParser, IInlineTagParser, ISimpleTag
+    public class TagIgnoreParser : IBlockTagParser, IInlineTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "title", "meta", "link", "script", "style", "datalist" };
 

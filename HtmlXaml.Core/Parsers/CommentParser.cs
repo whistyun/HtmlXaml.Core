@@ -8,7 +8,7 @@ namespace HtmlXaml.Core.Parsers
     /// <summary>
     /// remove comment element
     /// </summary>
-    public class CommentParsre : IBlockTagParser, IInlineTagParser, ISimpleTag
+    public class CommentParsre : IBlockTagParser, IInlineTagParser
     {
         public IEnumerable<string> SupportTag => new[] { HtmlNode.HtmlNodeTypeNameComment };
 

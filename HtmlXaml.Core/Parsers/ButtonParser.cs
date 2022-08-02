@@ -8,7 +8,7 @@ using System.Windows.Documents;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class ButtonParser : IInlineTagParser, ISimpleTag
+    public class ButtonParser : IInlineTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "button" };
 

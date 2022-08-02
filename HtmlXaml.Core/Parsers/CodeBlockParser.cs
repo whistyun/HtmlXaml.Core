@@ -8,7 +8,7 @@ using System.Windows.Documents;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class CodeBlockParser : IBlockTagParser, ISimpleTag
+    public class CodeBlockParser : IBlockTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "pre" };
 

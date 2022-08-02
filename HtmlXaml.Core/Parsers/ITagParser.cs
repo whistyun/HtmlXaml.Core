@@ -7,6 +7,7 @@ namespace HtmlXaml.Core.Parsers
 {
     public interface ITagParser
     {
+        IEnumerable<string> SupportTag { get; }
         bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated);
     }
 
@@ -18,11 +19,6 @@ namespace HtmlXaml.Core.Parsers
     public interface IBlockTagParser : ITagParser
     {
         bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Block> generated);
-    }
-
-    public interface ISimpleTag
-    {
-        IEnumerable<string> SupportTag { get; }
     }
 
     public interface IHasPriority

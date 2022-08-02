@@ -9,7 +9,7 @@ using HtmlXaml.Core.Utils;
 
 namespace HtmlXaml.Core.Parsers.MarkdigExtensions
 {
-    public class GridTableParser : IBlockTagParser, ISimpleTag, IHasPriority
+    public class GridTableParser : IBlockTagParser, IHasPriority
     {
         public int Priority => HasPriority.DefaultPriority + 1000;
 

@@ -11,7 +11,7 @@ using System.Windows.Media;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class InputParser : IInlineTagParser, ISimpleTag
+    public class InputParser : IInlineTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "input" };
 

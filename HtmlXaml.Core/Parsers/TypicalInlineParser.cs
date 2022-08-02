@@ -15,32 +15,34 @@ namespace HtmlXaml.Core.Parsers
     public class TypicalInlineParser : IInlineTagParser
     {
         private const string _resource = "HtmlXaml.Core.Parsers.TypicalInlineParser.tsv";
-        private Dictionary<string, TypicalParseInfo> _infos;
+        private TypicalParseInfo _parser;
 
-        public TypicalInlineParser()
+        public IEnumerable<string> SupportTag => new[] { _parser.HtmlTag };
+
+        public TypicalInlineParser(TypicalParseInfo parser)
         {
-            _infos = TypicalParseInfo.Load(_resource);
+            _parser = parser;
         }
 
         bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
         {
-            var rtn = TryReplace(node, manager, out var list);
+            var rtn = _parser.TryReplace(node, manager, out var list);
             generated = list;
             return rtn;
         }
 
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Inline> generated)
         {
-            if (_infos.TryGetValue(node.Name.ToLower(), out TypicalParseInfo? info)
-                && info.TryReplace(node, manager, out var parsed))
+            var rtn = _parser.TryReplace(node, manager, out var list);
+            generated = list.Cast<Inline>();
+            return rtn;
+        }
+
+        public static IEnumerable<TypicalInlineParser> Load()
+        {
+            foreach (var info in TypicalParseInfo.Load(_resource))
             {
-                generated = parsed.Cast<Inline>();
-                return true;
-            }
-            else
-            {
-                generated = Array.Empty<Inline>();
-                return false;
+                yield return new TypicalInlineParser(info);
             }
         }
     }

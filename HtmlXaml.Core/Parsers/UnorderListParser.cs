@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class UnorderListParser : IBlockTagParser, ISimpleTag
+    public class UnorderListParser : IBlockTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "ul" };
 

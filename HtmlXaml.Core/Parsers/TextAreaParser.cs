@@ -8,7 +8,7 @@ using System.Windows.Documents;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class TextAreaParser : IInlineTagParser, ISimpleTag
+    public class TextAreaParser : IInlineTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "textarea" };
 

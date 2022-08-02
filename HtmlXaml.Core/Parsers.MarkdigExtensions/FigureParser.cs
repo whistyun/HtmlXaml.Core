@@ -7,7 +7,7 @@ using System.Windows.Documents;
 
 namespace HtmlXaml.Core.Parsers.MarkdigExtensions
 {
-    public class FigureParser : IBlockTagParser, ISimpleTag
+    public class FigureParser : IBlockTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "figure" };
 

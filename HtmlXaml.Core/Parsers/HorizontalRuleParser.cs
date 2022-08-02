@@ -7,7 +7,7 @@ using System.Windows.Documents;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class HorizontalRuleParser : IBlockTagParser, ISimpleTag
+    public class HorizontalRuleParser : IBlockTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "hr" };
 

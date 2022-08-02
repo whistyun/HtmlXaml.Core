@@ -11,7 +11,7 @@ using System.Windows.Media;
 
 namespace HtmlXaml.Core.Parsers
 {
-    public class ProgressParser : IInlineTagParser, ISimpleTag
+    public class ProgressParser : IInlineTagParser
     {
         public IEnumerable<string> SupportTag => new[] { "progress", "meter" };
 
