@@ -21,7 +21,7 @@ namespace HtmlXaml.Core.Parsers
 
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Block> generated)
         {
-            generated = Array.Empty<Block>();
+            generated = EnumerableExt.Empty<Block>();
 
             var codeElements = node.ChildNodes.CollectTag("code");
             if (codeElements.Count != 0)

@@ -20,10 +20,13 @@ namespace HtmlXaml.Core.Parsers.MarkdigExtensions
 
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Block> generated)
         {
-            (var captionList, var contentList) =
+            var captionPair =
                 node.ChildNodes
                     .SkipComment()
                     .Filter(nd => string.Equals(nd.Name, "figcaption", StringComparison.OrdinalIgnoreCase));
+
+            var captionList = captionPair.Item1;
+            var contentList = captionPair.Item2;
 
             var captionBlock = manager.Grouping(manager.ParseJagging(captionList.SelectMany(c => c.ChildNodes)));
             var contentBlock = manager.Grouping(manager.ParseJagging(contentList));

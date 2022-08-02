@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using HtmlXaml.Core.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace HtmlXaml.Core.Parsers
             var alt = node.Attributes["alt"]?.Value;
             if (link is null)
             {
-                generated = Array.Empty<Inline>();
+                generated = EnumerableExt.Empty<Inline>();
                 return false;
             }
             var title = node.Attributes["title"]?.Value;

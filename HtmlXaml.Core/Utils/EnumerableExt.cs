@@ -17,5 +17,12 @@ namespace HtmlXaml.Core.Utils
 
             return true;
         }
+
+        public static T[] Empty<T>() => EmptyArray<T>.Value;
+    }
+
+    internal class EmptyArray<T>
+    {
+        public static T[] Value = new T[0];
     }
 }

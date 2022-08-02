@@ -289,7 +289,7 @@ namespace HtmlXaml.Core
                         new[] { new Run(node.OuterHtml) };
 
                 case UnknownTagsOption.Drop:
-                    return Array.Empty<TextElement>();
+                    return EnumerableExt.Empty<TextElement>();
 
                 case UnknownTagsOption.Bypass:
                     return ParseJagging(node.ChildNodes);
@@ -345,7 +345,7 @@ namespace HtmlXaml.Core
                     };
 
                 case UnknownTagsOption.Drop:
-                    return Array.Empty<Block>();
+                    return EnumerableExt.Empty<Block>();
 
                 case UnknownTagsOption.Bypass:
                     return node.ChildNodes
@@ -379,7 +379,7 @@ namespace HtmlXaml.Core
                         new[] { new Run(node.OuterHtml) };
 
                 case UnknownTagsOption.Drop:
-                    return Array.Empty<Inline>();
+                    return EnumerableExt.Empty<Inline>();
 
                 case UnknownTagsOption.Bypass:
                     return node.ChildNodes

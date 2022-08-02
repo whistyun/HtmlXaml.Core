@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using HtmlXaml.Core.Utils;
 using System;
 using System.Collections.Generic;
 using System.Windows.Documents;
@@ -14,19 +15,19 @@ namespace HtmlXaml.Core.Parsers
 
         bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<TextElement> generated)
         {
-            generated = Array.Empty<TextElement>();
+            generated = EnumerableExt.Empty<TextElement>();
             return true;
         }
 
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Block> generated)
         {
-            generated = Array.Empty<Block>();
+            generated = EnumerableExt.Empty<Block>();
             return true;
         }
 
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Inline> generated)
         {
-            generated = Array.Empty<Inline>();
+            generated = EnumerableExt.Empty<Inline>();
             return true;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using HtmlXaml.Core.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace HtmlXaml.Core.Parsers
                 return true;
             }
 
-            generated = Array.Empty<Inline>();
+            generated = EnumerableExt.Empty<Inline>();
             return false;
         }
     }

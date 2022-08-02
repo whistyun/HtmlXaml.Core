@@ -133,7 +133,7 @@ namespace HtmlXaml.Core.Utils
             return true;
         }
 
-        public static (List<HtmlNode> filterIn, List<HtmlNode> filterOut) Filter(this IEnumerable<HtmlNode> list, Func<HtmlNode, bool> filterFunc)
+        public static Tuple<List<HtmlNode>, List<HtmlNode>> Filter(this IEnumerable<HtmlNode> list, Func<HtmlNode, bool> filterFunc)
         {
             var filterIn = new List<HtmlNode>();
             var filterOut = new List<HtmlNode>();
@@ -150,7 +150,7 @@ namespace HtmlXaml.Core.Utils
                 }
             }
 
-            return (filterIn, filterOut);
+            return Tuple.Create(filterIn, filterOut);
         }
     }
 }

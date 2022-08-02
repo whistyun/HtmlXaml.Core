@@ -96,7 +96,7 @@ namespace HtmlXaml.Core.Parsers
                         }
                         else
                         {
-                            generated = Array.Empty<TextElement>();
+                            generated = EnumerableExt.Empty<TextElement>();
                             return false;
                         }
 
@@ -117,7 +117,7 @@ namespace HtmlXaml.Core.Parsers
                     }
                     else
                     {
-                        generated = Array.Empty<TextElement>();
+                        generated = EnumerableExt.Empty<TextElement>();
                         return false;
                     }
 
