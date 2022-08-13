@@ -50,8 +50,8 @@ namespace HtmlXaml.Core
                 Register(parser);
         }
 
-        public IEnumerable<string> InlineTags => _inlineBindParsers.Keys;
-        public IEnumerable<string> BlockTags => _blockBindParsers.Keys;
+        public IEnumerable<string> InlineTags => _inlineBindParsers.Keys.Where(tag => !tag.StartsWith("#"));
+        public IEnumerable<string> BlockTags => _blockBindParsers.Keys.Where(tag => !tag.StartsWith("#"));
 
         public bool MaybeSupportBodyTag(string tagName)
             => _blockBindParsers.ContainsKey(tagName.ToLower());
