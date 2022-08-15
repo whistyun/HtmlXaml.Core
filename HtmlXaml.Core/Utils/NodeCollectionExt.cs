@@ -86,10 +86,12 @@ namespace HtmlXaml.Core.Utils
         public static bool HasOneTag(
             this HtmlNodeCollection list,
             string tagName,
-#if !NETFRAMEWORK
-            [MaybeNullWhen(false)] 
-#endif
+#if NETFRAMEWORK
             out HtmlNode child)
+#else
+            [MaybeNullWhen(false)]
+            out HtmlNode child)
+#endif
         {
             var children = CollectTag(list, tagName);
 
@@ -100,10 +102,9 @@ namespace HtmlXaml.Core.Utils
             }
             else
             {
-                child = null;
+                child = null!;
                 return false;
             }
-
         }
 
         public static bool TryCastTextNode(this HtmlNodeCollection list, out List<HtmlTextNode> texts)

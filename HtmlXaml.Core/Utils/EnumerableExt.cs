@@ -23,6 +23,9 @@ namespace HtmlXaml.Core.Utils
 
     internal class EmptyArray<T>
     {
+        // net45 dosen't have Array.Empty<T>()
+#pragma warning disable CA1825
         public static T[] Value = new T[0];
+#pragma warning restore CA1825
     }
 }

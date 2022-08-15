@@ -86,7 +86,7 @@ namespace HtmlXaml.Core.Parsers.MarkdigExtensions
                 var tableSec = new Section();
                 foreach (var cap in captions)
                 {
-                    tableSec.Blocks.AddRange(manager.ParseAndGroup(captions[0].ChildNodes));
+                    tableSec.Blocks.AddRange(manager.ParseAndGroup(cap.ChildNodes));
                 }
 
                 tableSec.Blocks.Add(table);
@@ -102,9 +102,9 @@ namespace HtmlXaml.Core.Parsers.MarkdigExtensions
             return true;
         }
 
-        private void ParseColumnStyle(HtmlNode tableTag, Table table)
+        private static void ParseColumnStyle(HtmlNode tableTag, Table table)
         {
-            var colHolder = tableTag.ChildNodes.HasOneTag("colgroup", out var colgroup) ? colgroup : tableTag;
+            var colHolder = tableTag.ChildNodes.HasOneTag("colgroup", out var colgroup) ? colgroup! : tableTag;
 
             foreach (var col in colHolder.ChildNodes.CollectTag("col"))
             {
@@ -146,7 +146,7 @@ namespace HtmlXaml.Core.Parsers.MarkdigExtensions
         }
 
 
-        private TableRowGroup CreateRowGroup(
+        private static TableRowGroup CreateRowGroup(
             IEnumerable<HtmlNode> rows,
             ReplaceManager manager,
             out int maxColCount)

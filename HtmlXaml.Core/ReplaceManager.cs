@@ -15,9 +15,9 @@ namespace HtmlXaml.Core
 {
     public class ReplaceManager : IUriContext
     {
-        private Dictionary<string, List<IInlineTagParser>> _inlineBindParsers;
-        private Dictionary<string, List<IBlockTagParser>> _blockBindParsers;
-        private Dictionary<string, List<ITagParser>> _bindParsers;
+        private readonly Dictionary<string, List<IInlineTagParser>> _inlineBindParsers;
+        private readonly Dictionary<string, List<IBlockTagParser>> _blockBindParsers;
+        private readonly Dictionary<string, List<ITagParser>> _bindParsers;
 
         public ReplaceManager()
         {
@@ -60,9 +60,9 @@ namespace HtmlXaml.Core
             => _inlineBindParsers.ContainsKey(tagName.ToLower());
 
         public UnknownTagsOption UnknownTags { get; set; }
-        public ICommand HyperlinkCommand { get; set; }
-        public Uri BaseUri { get; set; }
-        public string AssetPathRoot { get; set; }
+        public ICommand? HyperlinkCommand { get; set; }
+        public Uri? BaseUri { get; set; }
+        public string? AssetPathRoot { get; set; }
 
         public void Register(ITagParser parser)
         {
@@ -78,41 +78,30 @@ namespace HtmlXaml.Core
 
             PrivateRegister(parser, _bindParsers);
 
-        }
-
-        private void PrivateRegister<T>(T parser, Dictionary<string, List<T>> bindParsers) where T : ITagParser
-        {
-            foreach (var tag in parser.SupportTag)
+            static void PrivateRegister<T>(T parser, Dictionary<string, List<T>> bindParsers) where T : ITagParser
             {
-                if (!bindParsers.TryGetValue(tag.ToLower(), out var list))
+                foreach (var tag in parser.SupportTag)
                 {
-                    list = new();
-                    bindParsers.Add(tag.ToLower(), list);
+                    if (!bindParsers.TryGetValue(tag.ToLower(), out var list))
+                    {
+                        list = new();
+                        bindParsers.Add(tag.ToLower(), list);
+                    }
+
+                    int parserPriority = GetPriority(parser);
+
+                    int i = 0;
+                    int count = list.Count;
+                    for (; i < count; ++i)
+                        if (parserPriority <= GetPriority(list[i]))
+                            break;
+
+                    list.Insert(i, parser);
                 }
-
-                InsertWithPriority(list, parser);
             }
-        }
 
-        private void InsertWithPriority<T>(List<T> list, T parser)
-        {
             static int GetPriority(object? p)
                 => p is IHasPriority prop ? prop.Priority : HasPriority.DefaultPriority;
-
-            int parserPriority = GetPriority(parser);
-
-            int count = list.Count;
-            for (int i = 0; i < count; ++i)
-            {
-                var elmnt = list[i];
-
-                if (parserPriority <= GetPriority(elmnt))
-                {
-                    list.Insert(i, parser);
-                    return;
-                }
-            }
-            list.Add(parser);
         }
 
         public string GetTag(Tags tag)
@@ -281,23 +270,21 @@ namespace HtmlXaml.Core
                 }
             }
 
-            switch (UnknownTags)
+            return UnknownTags switch
             {
-                case UnknownTagsOption.PassThrough:
-                    return HtmlUtils.IsBlockTag(node.Name) ?
+                UnknownTagsOption.PassThrough
+                    => HtmlUtils.IsBlockTag(node.Name) ?
                         new[] { new Paragraph(new Run() { Text = node.OuterHtml }) } :
-                        new[] { new Run(node.OuterHtml) };
+                        new[] { new Run(node.OuterHtml) },
 
-                case UnknownTagsOption.Drop:
-                    return EnumerableExt.Empty<TextElement>();
+                UnknownTagsOption.Drop
+                    => EnumerableExt.Empty<TextElement>(),
 
-                case UnknownTagsOption.Bypass:
-                    return ParseJagging(node.ChildNodes);
+                UnknownTagsOption.Bypass
+                    => ParseJagging(node.ChildNodes),
 
-                case UnknownTagsOption.Raise:
-                default:
-                    throw new UnknownTagException(node);
-            }
+                _ => throw new UnknownTagException(node)
+            };
         }
 
         public IEnumerable<Block> ParseBlock(string html)
@@ -333,29 +320,27 @@ namespace HtmlXaml.Core
                 }
             }
 
-            switch (UnknownTags)
+            return UnknownTags switch
             {
-                case UnknownTagsOption.PassThrough:
-                    return new[] {
+                UnknownTagsOption.PassThrough
+                    => new[] {
                         new Paragraph(
                             HtmlUtils.IsBlockTag(node.Name) ?
                                 new Run() { Text = node.OuterHtml }:
                                 new Run(node.OuterHtml)
                         )
-                    };
+                    },
 
-                case UnknownTagsOption.Drop:
-                    return EnumerableExt.Empty<Block>();
+                UnknownTagsOption.Drop
+                    => EnumerableExt.Empty<Block>(),
 
-                case UnknownTagsOption.Bypass:
-                    return node.ChildNodes
-                               .SkipComment()
-                               .SelectMany(nd => ParseBlock(nd));
+                UnknownTagsOption.Bypass
+                    => node.ChildNodes
+                           .SkipComment()
+                           .SelectMany(nd => ParseBlock(nd)),
 
-                case UnknownTagsOption.Raise:
-                default:
-                    throw new UnknownTagException(node);
-            }
+                _ => throw new UnknownTagException(node)
+            };
         }
 
         public IEnumerable<Inline> ParseInline(HtmlNode node)
@@ -371,25 +356,23 @@ namespace HtmlXaml.Core
                 }
             }
 
-            switch (UnknownTags)
+            return UnknownTags switch
             {
-                case UnknownTagsOption.PassThrough:
-                    return HtmlUtils.IsBlockTag(node.Name) ?
+                UnknownTagsOption.PassThrough
+                    => HtmlUtils.IsBlockTag(node.Name) ?
                         new[] { new Run() { Text = node.OuterHtml } } :
-                        new[] { new Run(node.OuterHtml) };
+                        new[] { new Run(node.OuterHtml) },
 
-                case UnknownTagsOption.Drop:
-                    return EnumerableExt.Empty<Inline>();
+                UnknownTagsOption.Drop
+                    => EnumerableExt.Empty<Inline>(),
 
-                case UnknownTagsOption.Bypass:
-                    return node.ChildNodes
-                               .SkipComment()
-                               .SelectMany(nd => ParseInline(nd));
+                UnknownTagsOption.Bypass
+                    => node.ChildNodes
+                           .SkipComment()
+                           .SelectMany(nd => ParseInline(nd)),
 
-                case UnknownTagsOption.Raise:
-                default:
-                    throw new UnknownTagException(node);
-            }
+                _ => throw new UnknownTagException(node)
+            };
         }
 
         /// <summary>
@@ -398,7 +381,7 @@ namespace HtmlXaml.Core
         /// </summary>
         public IEnumerable<Block> Grouping(IEnumerable<TextElement> elements)
         {
-            Paragraph? Group(IList<Inline> inlines)
+            static Paragraph? Group(IList<Inline> inlines)
             {
                 // trim whiltepace plain
 
@@ -491,7 +474,7 @@ namespace HtmlXaml.Core
             }
         }
 
-        private HtmlNode? PickBodyOrHead(HtmlNode documentNode, string headOrBody)
+        private static HtmlNode? PickBodyOrHead(HtmlNode documentNode, string headOrBody)
         {
             // html?
             foreach (var child in documentNode.ChildNodes)
