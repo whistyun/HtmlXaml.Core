@@ -24,19 +24,19 @@ namespace HtmlXaml.Core.Parsers
 
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Inline> generated)
         {
-            var bar = new ProgressBar();
-            bar.Value = TryParse(node.Attributes["value"]?.Value, 1);
-            bar.Minimum = TryParse(node.Attributes["min"]?.Value, 0);
-            bar.Maximum = TryParse(node.Attributes["max"]?.Value, 1);
-
-            bar.Width = 50;
-            bar.Height = 12;
-
+            var bar = new ProgressBar()
+            {
+                Value = TryParse(node.Attributes["value"]?.Value, 1),
+                Minimum = TryParse(node.Attributes["min"]?.Value, 0),
+                Maximum = TryParse(node.Attributes["max"]?.Value, 1),
+                Width = 50,
+                Height = 12,
+            };
             generated = new[] { new InlineUIContainer(bar) };
             return true;
         }
 
-        private int TryParse(string? txt, int def)
+        private static int TryParse(string? txt, int def)
         {
             if (txt is null) return def;
             return int.TryParse(txt, out var v) ? v : def;

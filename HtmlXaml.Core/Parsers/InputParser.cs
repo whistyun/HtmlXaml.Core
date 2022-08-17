@@ -46,10 +46,13 @@ namespace HtmlXaml.Core.Parsers
             {
                 default:
                 case "text":
-                    var txt = new TextBox();
-                    txt.Text = node.Attributes["value"]?.Value ?? "";
+                    var txt = new TextBox()
+                    {
+                        Text = node.Attributes["value"]?.Value ?? "",
+                        IsReadOnly = true,
+                    };
                     if (width.HasValue) txt.Width = width.Value;
-                    txt.IsReadOnly = true;
+
 
                     inline = new InlineUIContainer(txt);
                     break;
@@ -58,28 +61,33 @@ namespace HtmlXaml.Core.Parsers
                 case "button":
                 case "reset":
                 case "submit":
-                    var btn = new Button();
-                    btn.Content = node.Attributes["value"]?.Value ?? "";
+                    var btn = new Button()
+                    {
+                        Content = node.Attributes["value"]?.Value ?? "",
+                        IsEnabled = false,
+                    };
                     if (width.HasValue) btn.Width = width.Value;
-                    btn.IsEnabled = false;
 
                     inline = new InlineUIContainer(btn);
                     break;
 
 
                 case "radio":
-                    var radio = new RadioButton();
-                    radio.IsEnabled = false;
-                    if (node.Attributes["checked"] != null)
-                        radio.IsChecked = true;
+                    var radio = new RadioButton()
+                    {
+                        IsEnabled = false,
+                    };
+                    if (node.Attributes["checked"] != null) radio.IsChecked = true;
 
                     inline = new InlineUIContainer(radio);
                     break;
 
 
                 case "checkbox":
-                    var chk = new CheckBox();
-                    chk.IsEnabled = false;
+                    var chk = new CheckBox()
+                    {
+                        IsEnabled = false
+                    };
                     if (node.Attributes["checked"] != null)
                         chk.IsChecked = true;
 
@@ -88,11 +96,13 @@ namespace HtmlXaml.Core.Parsers
 
 
                 case "range":
-                    var slider = new Slider();
-                    slider.IsEnabled = false;
-                    slider.Minimum = 0;
-                    slider.Value = 50;
-                    slider.Maximum = 100;
+                    var slider = new Slider()
+                    {
+                        IsEnabled = false,
+                        Minimum = 0,
+                        Value = 50,
+                        Maximum = 100,
+                    };
 
                     var minAttr = node.Attributes["min"];
                     if (minAttr is not null && double.TryParse(minAttr.Value, out var minVal))
@@ -118,7 +128,8 @@ namespace HtmlXaml.Core.Parsers
                     break;
             }
 
-            generated = new[] { inline };
+            generated = new[] { inline
+    };
             return true;
         }
     }

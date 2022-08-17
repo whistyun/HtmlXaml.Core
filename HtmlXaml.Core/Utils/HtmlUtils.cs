@@ -8,7 +8,7 @@ namespace HtmlXaml.Core.Utils
 {
     class HtmlUtils
     {
-        private static HashSet<string> _blockTags = new()
+        private static readonly HashSet<string> s_blockTags = new()
         {
             "address",
             "article",
@@ -77,6 +77,6 @@ namespace HtmlXaml.Core.Utils
             "ul",
         };
 
-        public static bool IsBlockTag(string tagName) => _blockTags.Contains(tagName.ToLower());
+        public static bool IsBlockTag(string tagName) => s_blockTags.Contains(tagName.ToLower());
     }
 }

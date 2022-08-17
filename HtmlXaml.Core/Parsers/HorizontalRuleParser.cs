@@ -21,8 +21,10 @@ namespace HtmlXaml.Core.Parsers
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Block> generated)
         {
             var sep = new Separator();
-            var container = new BlockUIContainer(sep);
-            container.Tag = manager.GetTag(Tags.TagRuleSingle);
+            var container = new BlockUIContainer(sep)
+            {
+                Tag = manager.GetTag(Tags.TagRuleSingle)
+            };
 
             generated = new[] { container };
             return true;

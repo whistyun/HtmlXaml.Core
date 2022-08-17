@@ -22,7 +22,7 @@ namespace HtmlXaml.Core.Parsers
         {
             if (node is HtmlTextNode textNode)
             {
-                generated = new[] { new Run(textNode.Text) };
+                generated = new[] { new Run(textNode.Text.Replace('\n', ' ')) };
                 return true;
             }
 

@@ -2,7 +2,9 @@
 using HtmlXaml.Core.Utils;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -33,9 +35,7 @@ namespace HtmlXaml.Core.Parsers
             }
             var title = node.Attributes["title"]?.Value;
 
-
             var imgSource = manager.LoadImage(link);
-
 
             if (imgSource is null)
             {
@@ -43,24 +43,93 @@ namespace HtmlXaml.Core.Parsers
             }
             else
             {
-                Image image = new Image { Source = imgSource };
-                image.ToolTip = title;
+                var widthTxt = node.Attributes["width"]?.Value;
+                var heightTxt = node.Attributes["height"]?.Value;
+
+                var image = new Image
+                {
+                    Source = imgSource,
+                    ToolTip = title
+                };
+
+                if (!string.IsNullOrEmpty(heightTxt)
+                    && Length.TryParse(heightTxt, out var heightLen))
+                {
+                    if (heightLen.Unit == Unit.Percentage)
+                    {
+                        image.SetBinding(
+                            Image.HeightProperty,
+                            new Binding(nameof(Image.Width))
+                            {
+                                RelativeSource = new RelativeSource(RelativeSourceMode.Self),
+                                Converter = new MultiplyConverter(heightLen.Value / 100)
+                            });
+                    }
+                    else
+                    {
+                        image.Height = heightLen.ToPoint();
+                    }
+                }
 
                 // Bind size so document is updated when image is downloaded
-                if (imgSource.IsDownloading)
+                if (!String.IsNullOrEmpty(widthTxt)
+                    && Length.TryParse(widthTxt, out var widthLen))
                 {
-                    Binding binding = new Binding(nameof(BitmapImage.Width));
+                    if (widthLen.Unit == Unit.Percentage)
+                    {
+                        image.Loaded += (s, e) =>
+                        {
+                            var owner = (Image)s;
+
+                            var parent = owner.Parent;
+
+                            for (; ; )
+                            {
+                                if (parent is FrameworkElement element)
+                                {
+                                    parent = element;
+                                    break;
+                                }
+                                else if (parent is FrameworkContentElement content)
+                                {
+                                    parent = content.Parent;
+                                }
+                                else break;
+                            }
+
+                            if (parent is FlowDocumentScrollViewer)
+                            {
+                                var binding = CreateMultiBindingForFlowDocumentScrollViewer();
+                                binding.Converter = new MultiMultiplyConverter2(widthLen.Value / 100);
+                                owner.SetBinding(Image.WidthProperty, binding);
+                            }
+                            else
+                            {
+                                var binding = CreateBinding(nameof(FrameworkElement.ActualWidth), typeof(FrameworkElement));
+                                binding.Converter = new MultiplyConverter(widthLen.Value / 100);
+                                owner.SetBinding(Image.WidthProperty, binding);
+                            }
+                        };
+                    }
+                    else
+                    {
+                        image.Width = widthLen.ToPoint();
+                    }
+                }
+                else if (imgSource.IsDownloading)
+                {
+                    Binding binding = new(nameof(BitmapImage.Width));
                     binding.Source = imgSource;
                     binding.Mode = BindingMode.OneWay;
 
                     BindingExpressionBase bindingExpression = BindingOperations.SetBinding(image, Image.WidthProperty, binding);
-                    EventHandler? downloadCompletedHandler = null;
-                    downloadCompletedHandler = (sender, e) =>
+                    void downloadCompletedHandler(object? sender, EventArgs e)
                     {
                         imgSource.DownloadCompleted -= downloadCompletedHandler;
                         imgSource.Freeze();
                         bindingExpression.UpdateTarget();
-                    };
+                    }
+
                     imgSource.DownloadCompleted += downloadCompletedHandler;
                 }
                 else
@@ -86,6 +155,79 @@ namespace HtmlXaml.Core.Parsers
             }
 
             return true;
+        }
+        private MultiBinding CreateMultiBindingForFlowDocumentScrollViewer()
+        {
+            var binding = new MultiBinding();
+
+            var totalWidth = CreateBinding(nameof(FlowDocumentScrollViewer.ActualWidth), typeof(FlowDocumentScrollViewer));
+            var verticalBarVis = CreateBinding(nameof(FlowDocumentScrollViewer.VerticalScrollBarVisibility), typeof(FlowDocumentScrollViewer));
+
+            binding.Bindings.Add(totalWidth);
+            binding.Bindings.Add(verticalBarVis);
+
+            return binding;
+        }
+
+        private static Binding CreateBinding(string propName, Type ancestorType)
+        {
+            return new Binding(propName)
+            {
+                RelativeSource = new RelativeSource()
+                {
+                    Mode = RelativeSourceMode.FindAncestor,
+                    AncestorType = ancestorType,
+                }
+            };
+        }
+
+        class MultiplyConverter : IValueConverter
+        {
+            public double Value { get; }
+
+            public MultiplyConverter(double v)
+            {
+                Value = v;
+            }
+
+            public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+            {
+                return Value * (Double)value;
+            }
+
+            public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            {
+                return ((Double)value) / Value;
+            }
+        }
+        class MultiMultiplyConverter2 : IMultiValueConverter
+        {
+            public double Value { get; }
+
+            public MultiMultiplyConverter2(double v)
+            {
+                Value = v;
+            }
+
+            public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+            {
+                var value = (double)values[0];
+                var visibility = (ScrollBarVisibility)values[1];
+
+                if (visibility == ScrollBarVisibility.Visible)
+                {
+                    return Value * (value - SystemParameters.VerticalScrollBarWidth);
+                }
+                else
+                {
+                    return Value * (Double)value;
+                }
+            }
+
+            public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

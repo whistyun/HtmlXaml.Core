@@ -52,7 +52,7 @@ namespace HtmlXaml.Core.Parsers
             else return false;
         }
 
-        private string ParseLangCode(string? classVal)
+        private static string ParseLangCode(string? classVal)
         {
             if (classVal is null) return "";
 
@@ -61,7 +61,7 @@ namespace HtmlXaml.Core.Parsers
                                    .Reverse()
                                    .Where(i => !Char.IsLetterOrDigit(classVal[i]));
 
-            return classVal.Substring(indics.Count() == 0 ? 0 : indics.First() + 1);
+            return classVal.Substring(indics.Any() ? indics.First() + 1 : 0);
         }
     }
 }

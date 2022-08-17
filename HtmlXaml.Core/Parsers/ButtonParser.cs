@@ -24,12 +24,14 @@ namespace HtmlXaml.Core.Parsers
             var doc = new FlowDocument();
             doc.Blocks.AddRange(manager.ParseAndGroup(node.ChildNodes));
 
-            var box = new FlowDocumentScrollViewer();
-            box.Margin = new Thickness(0);
-            box.Padding = new Thickness(0);
-            box.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
-            box.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
-            box.Document = doc;
+            var box = new FlowDocumentScrollViewer()
+            {
+                Margin = new Thickness(0),
+                Padding = new Thickness(0),
+                VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                Document = doc,
+            };
 
             box.Loaded += (s, e) =>
             {
@@ -73,9 +75,11 @@ namespace HtmlXaml.Core.Parsers
             };
 
 
-            var btn = new Button();
-            btn.Content = box;
-            btn.IsEnabled = false;
+            var btn = new Button()
+            {
+                Content = box,
+                IsEnabled = false,
+            };
 
             generated = new[] { new InlineUIContainer(btn) };
             return true;

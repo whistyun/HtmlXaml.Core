@@ -15,7 +15,7 @@ namespace HtmlXaml.Core.Parsers
     public class TypicalInlineParser : IInlineTagParser
     {
         private const string _resource = "HtmlXaml.Core.Parsers.TypicalInlineParser.tsv";
-        private TypicalParseInfo _parser;
+        private readonly TypicalParseInfo _parser;
 
         public IEnumerable<string> SupportTag => new[] { _parser.HtmlTag };
 

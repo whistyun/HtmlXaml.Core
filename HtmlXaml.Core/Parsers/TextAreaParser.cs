@@ -21,11 +21,13 @@ namespace HtmlXaml.Core.Parsers
 
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Inline> generated)
         {
-            var area = new TextBox();
-            area.AcceptsReturn = true;
-            area.AcceptsTab = true;
-            area.Text = node.InnerText.Trim();
-            area.TextWrapping = TextWrapping.Wrap;
+            var area = new TextBox()
+            {
+                AcceptsReturn = true,
+                AcceptsTab = true,
+                Text = node.InnerText.Trim(),
+                TextWrapping = TextWrapping.Wrap,
+            };
 
             int? rows = null;
             int? cols = null;

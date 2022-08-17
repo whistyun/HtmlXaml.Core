@@ -21,8 +21,10 @@ namespace HtmlXaml.Core.Parsers
 
         public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<Block> generated)
         {
-            var list = new List();
-            list.MarkerStyle = TextMarkerStyle.Decimal;
+            var list = new List()
+            {
+                MarkerStyle = TextMarkerStyle.Decimal
+            };
 
             var startAttr = node.Attributes["start"];
             if (startAttr is not null && Int32.TryParse(startAttr.Value, out var start))

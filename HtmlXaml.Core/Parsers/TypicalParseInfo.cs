@@ -19,7 +19,7 @@ namespace HtmlXaml.Core.Parsers
         public Tags TagName { get; }
         public string? ExtraModifyName { get; }
 
-        private MethodInfo? _method;
+        private readonly MethodInfo? _method;
 
         public TypicalParseInfo(string[] line)
         {
@@ -61,7 +61,7 @@ namespace HtmlXaml.Core.Parsers
                     throw new InvalidOperationException("unknown method ExtraModify" + ExtraModifyName);
             }
 
-            string? GetArrayAt(string[] array, int idx)
+            static string? GetArrayAt(string[] array, int idx)
             {
                 if (idx < array.Length
                     && !string.IsNullOrWhiteSpace(array[idx]))
@@ -124,7 +124,7 @@ namespace HtmlXaml.Core.Parsers
                 }
                 else if (tag is Run run)
                 {
-                    run.Text = node.InnerText;
+                    run.Text = node.InnerText.Replace('\n', ' ');
                 }
                 else if (tag is Section section)
                 {

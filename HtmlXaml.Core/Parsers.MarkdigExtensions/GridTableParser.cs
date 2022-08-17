@@ -124,23 +124,16 @@ namespace HtmlXaml.Core.Parsers.MarkdigExtensions
                 var styleAttr = col.Attributes["style"];
                 if (styleAttr is null) continue;
 
-                var mch = Regex.Match(styleAttr.Value, "width:([^;\"]+?)(%|em|ex|mm|cm|in|pt|pc)");
+                var mch = Regex.Match(styleAttr.Value, "width:([^;\"]+)(%|em|ex|mm|cm|in|pt|pc|)");
                 if (!mch.Success) continue;
 
-                var numTxt = mch.Groups[1].Value.Trim();
-                if (!Double.TryParse(numTxt, out var numVal)) continue;
+                if (!Length.TryParse(mch.Groups[1].Value + mch.Groups[2].Value, out var length))
+                    continue;
 
-                coldef.Width = mch.Groups[2].Value.Trim() switch
+                coldef.Width = length.Unit switch
                 {
-                    "%" => new GridLength(numVal, GridUnitType.Star),
-                    "em" => new GridLength(numVal * 11),
-                    "ex" => new GridLength(numVal * 11 / 2),
-                    "mm" => new GridLength(numVal * 3.77952755905512),
-                    "cm" => new GridLength(numVal * 37.7952755905512),
-                    "in" => new GridLength(numVal * 96.0),
-                    "pt" => new GridLength(numVal * 1.33333333333333),
-                    "pc" => new GridLength(numVal * 16),
-                    _ => new GridLength(numVal),
+                    Unit.Percentage => new GridLength(length.Value, GridUnitType.Star),
+                    _ => new GridLength(length.ToPoint())
                 };
             }
         }
