@@ -5,12 +5,12 @@
     <UseWPF>true</UseWPF>
     <Authors>Simon Baynes; whistyun</Authors>
     <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/whistyun/MarkdownFromHtml</PackageProjectUrl>
-    <Description>A library for converting HTML to markdown syntax in C#</Description>
+    <PackageProjectUrl>https://github.com/whistyun/HtmlXaml.Core</PackageProjectUrl>
+    <Description>A library for converting HTML to FlowDocument in WPF</Description>
     <Copyright>© Simon Baynes 2013; whistyun 2022</Copyright>
+	<Version>1.0.0-alpha1</Version>
     <PackageTags>Markdown;Html;Convert</PackageTags>
     <UseWPF>true</UseWPF>
-
     <LangVersion>9</LangVersion>
     <Nullable>enable</Nullable>
     <!-- 

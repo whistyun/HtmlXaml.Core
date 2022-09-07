@@ -10,6 +10,7 @@ using HtmlXaml.Core.Parsers.MarkdigExtensions;
 using System.Windows.Markup;
 using System.Windows.Media.Imaging;
 using System.Linq;
+using System.Text;
 
 namespace HtmlXaml.Core
 {
@@ -175,7 +176,7 @@ namespace HtmlXaml.Core
         public IEnumerable<Block> Parse(string htmldoc)
         {
             var doc = new HtmlDocument();
-            doc.LoadHtml(htmldoc);
+            doc.LoadHtml(Format(htmldoc));
 
             return Parse(doc);
         }
@@ -290,7 +291,7 @@ namespace HtmlXaml.Core
         public IEnumerable<Block> ParseBlock(string html)
         {
             var doc = new HtmlDocument();
-            doc.LoadHtml(html);
+            doc.LoadHtml(Format(html));
 
             foreach (var node in doc.DocumentNode.ChildNodes)
                 foreach (var block in ParseBlock(node))
@@ -300,7 +301,7 @@ namespace HtmlXaml.Core
         public IEnumerable<Inline> ParseInline(string html)
         {
             var doc = new HtmlDocument();
-            doc.LoadHtml(html);
+            doc.LoadHtml(Format(html));
 
             foreach (var node in doc.DocumentNode.ChildNodes)
                 foreach (var inline in ParseInline(node))
@@ -526,5 +527,9 @@ namespace HtmlXaml.Core
             }
             return null;
         }
+
+        public static string Format(string html)
+            => html.Replace("\r\n", "\n")
+                   .Replace("\r", "\n");
     }
 }

@@ -52,6 +52,7 @@ namespace HtmlXaml.Core.Parsers
                         IsReadOnly = true,
                     };
                     if (width.HasValue) txt.Width = width.Value;
+                    else if (String.IsNullOrEmpty(txt.Text)) txt.Width = 100;
 
 
                     inline = new InlineUIContainer(txt);
@@ -67,6 +68,7 @@ namespace HtmlXaml.Core.Parsers
                         IsEnabled = false,
                     };
                     if (width.HasValue) btn.Width = width.Value;
+                    else if (String.IsNullOrEmpty(btn.Content.ToString())) btn.Width = 100;
 
                     inline = new InlineUIContainer(btn);
                     break;
@@ -102,6 +104,7 @@ namespace HtmlXaml.Core.Parsers
                         Minimum = 0,
                         Value = 50,
                         Maximum = 100,
+                        Width = 100,
                     };
 
                     var minAttr = node.Attributes["min"];
@@ -116,20 +119,21 @@ namespace HtmlXaml.Core.Parsers
                         slider.Maximum = maxVal;
                     }
 
-                    var valAttr = node.Attributes["val"];
+                    var valAttr = node.Attributes["value"];
                     if (valAttr is not null && double.TryParse(valAttr.Value, out var val))
                     {
                         slider.Value = val;
                     }
-
-                    slider.Value = (slider.Minimum + slider.Maximum) / 2;
+                    else
+                    {
+                        slider.Value = (slider.Minimum + slider.Maximum) / 2;
+                    }
 
                     inline = new InlineUIContainer(slider);
                     break;
             }
 
-            generated = new[] { inline
-    };
+            generated = new[] { inline };
             return true;
         }
     }

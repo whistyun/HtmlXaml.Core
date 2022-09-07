@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<FlowDocument xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+  <Paragraph>An <Run Tag="Code">apple</Run> is an editable fruit produced by an <Run Tag="Code">apple tree</Run>.</Paragraph>
+  <BlockUIContainer Tag="RuleSingle">
+    <Separator />
+  </BlockUIContainer>
+  <Paragraph>
+    <Run Tag="Code">Apple trees</Run> are caltivated wordwide.</Paragraph>
+</FlowDocument>

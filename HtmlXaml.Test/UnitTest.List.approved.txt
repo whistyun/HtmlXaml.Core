@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<FlowDocument xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+  <List MarkerStyle="Decimal">
+    <ListItem>
+      <Paragraph>asdf <Bold Tag="BoldSpan">fdsa</Bold> jkl; <Italic Tag="ItalicSpan">;lkj</Italic></Paragraph>
+    </ListItem>
+    <ListItem>
+      <Paragraph>1234567</Paragraph>
+    </ListItem>
+    <ListItem>
+      <Paragraph>
+        <RadioButton IsEnabled="False" />ねむい</Paragraph>
+    </ListItem>
+  </List>
+  <BlockUIContainer Tag="RuleSingle">
+    <Separator />
+  </BlockUIContainer>
+  <List MarkerStyle="Disc">
+    <ListItem>
+      <Paragraph>asdf <Bold Tag="BoldSpan">fdsa</Bold> jkl; <Italic Tag="ItalicSpan">;lkj</Italic></Paragraph>
+    </ListItem>
+    <ListItem>
+      <Paragraph>1234567</Paragraph>
+    </ListItem>
+    <ListItem>
+      <Paragraph>
+        <RadioButton IsEnabled="False" />ねむい</Paragraph>
+    </ListItem>
+  </List>
+  <BlockUIContainer Tag="RuleSingle">
+    <Separator />
+  </BlockUIContainer>
+  <List MarkerStyle="Decimal" StartIndex="12">
+    <ListItem>
+      <Paragraph>asdf <Bold Tag="BoldSpan">fdsa</Bold> jkl; <Italic Tag="ItalicSpan">;lkj</Italic></Paragraph>
+    </ListItem>
+    <ListItem>
+      <Paragraph>1234567</Paragraph>
+    </ListItem>
+    <ListItem>
+      <Paragraph>
+        <RadioButton IsEnabled="False" />ねむい</Paragraph>
+    </ListItem>
+  </List>
+</FlowDocument>
